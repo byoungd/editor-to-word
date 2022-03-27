@@ -41,7 +41,7 @@ export type Node = {
   style: string[];
   attrs: Attr;
   text: string;
-  voidElement?: boolean;
+  voidElement: boolean;
 };
 
 export type HtmlNode = string | (string | {});

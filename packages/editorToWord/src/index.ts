@@ -27,7 +27,6 @@ import {
   Header,
   HeightRule,
   IParagraphOptions,
-  ISectionOptions,
   Packer,
   PageOrientation,
   Paragraph,
