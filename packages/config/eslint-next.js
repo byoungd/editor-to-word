@@ -37,6 +37,7 @@ module.exports = {
 
     // next
     '@next/next/no-html-link-for-pages': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
   overrides: [
     {
