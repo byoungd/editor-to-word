@@ -1,0 +1,78 @@
+{
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint"
+  },
+  "name": "editor-to-word",
+  "author": "byoungd",
+  "module": "dist/editortoword.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/editortoword.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/editortoword.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^7.0.5",
+    "size-limit": "^7.0.5",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4",
+    "@types/tinycolor2": "~1.4.3"
+  },
+  "dependencies": {
+    "html-parse-stringify": "~3.0.1",
+    "jszip": "~3.7.1",
+    "file-saver": "~2.0.5",
+    "docx": "~7.3.0",
+    "@types/file-saver": "~2.0.5",
+    "tinycolor2": "~1.4.2"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/editor-to-word.esm.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "importSort": {
+    ".js, .jsx, .es6, .es": {
+      "parser": "babylon",
+      "style": "eslint",
+      "options": {}
+    },
+    ".ts, .tsx": {
+      "parser": "typescript",
+      "style": "eslint",
+      "options": {}
+    }
+  }
+}
