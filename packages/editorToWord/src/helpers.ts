@@ -1,4 +1,6 @@
-import { StyleMap } from './default';
+import { StyleMap, headingMap } from './default';
+
+import { Heading } from './types';
 import tinycolor from 'tinycolor2';
 
 export const removeTagDIV = (str: string) => {
@@ -22,3 +24,14 @@ export const isFontStyle = (key: string) => key === StyleMap.fontStyle;
 
 export const isValidColor = (color: string) => tinycolor(color).isValid();
 export const toHex = (color: string) => tinycolor(color).toHexString();
+
+export const getHeadingRunStyle = (heading: Heading) => {
+  const size = headingMap[heading].size;
+  return {
+    run: {
+      size,
+      bold: true,
+      color: headingMap[heading].color,
+    },
+  };
+};

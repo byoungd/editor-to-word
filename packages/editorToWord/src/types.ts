@@ -1,14 +1,15 @@
 import {
+  BorderStyle,
+  PageOrientation,
+  Paragraph,
   TableLayoutType,
   TableRow,
-  Paragraph,
-  WidthType,
-  BorderStyle,
   VerticalAlign,
+  WidthType,
 } from 'docx';
 
 export interface IPageLayout {
-  orientation?: string;
+  orientation: PageOrientation;
   paperRotation?: 0 | 1;
   topMargin: string;
   rightMargin: string;

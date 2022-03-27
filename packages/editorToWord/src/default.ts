@@ -1,56 +1,57 @@
-import { AlignmentType, BorderStyle } from 'docx';
+import { AlignmentType, BorderStyle, HeadingLevel } from 'docx';
 
-// 分隔符 冒号
+import { getHeadingRunStyle } from './helpers';
+
 export const Splitter_Colon = ':';
-// 分隔符 分号
+
 export const Splitter_Semicolon = ';';
 
-// 像素px和twips比率
+// px by twips
 export const PXbyTWIPS = 15;
 
-// 像素px相对pt的比率
+// px by pt
 export const PXbyPT = 3 / 4;
 
-// 默认字体大小 单位px
+// default font size in px
 export const D_FontSizePX = 16;
 
-// 默认字体大小 单位pt
+// default font size in pt
 export const D_FontSizePT = D_FontSizePX * PXbyPT;
 
-// 默认行距
+// default line height
 export const D_LineHeight = 1.5;
 
-// 页面宽度 单位px
-export const D_PageWithPX = 794;
+// default page width in px
+export const D_PageWidthPX = 794;
 
-// 页面高度 单位px
+// default page height in px
 export const D_PageHeightPX = 1123;
 
-// 默认边距 单位px
+// default page padding width in px
 export const D_PagePaddingPX = 71;
 
-// 页面表格默认最大宽度
+// default page table full width in px
 export const D_PageTableFullWidth = 642;
 
-// WPS表格的width
+// WPS table full width in twips
 export const WPS_TABLE_WIDTH_TWIPS = 9035;
 
-// a4纸张宽度，a4纸21cm 减去左右各3.18cm, 再转换成twips，但这里有个问题，这个3.18厘米是下载的时候参数传过来的，但3.18是默认值
+// a4 paper size
 export const A4MillimetersWidth = 145.4;
 
-// 单元格边距
+// table cell margin in px
 export const CELL_MARGIN = 80;
 
-// 表格外边框默认尺寸
+//table border width in px
 export const D_TableBorderSize = 2;
 
-// 百分比的全宽基数
+// full width in twips
 export const HP = 5000;
 
-// 宋体
+// font family songti
 export const FontSongTi = ['SimSun', '宋体', 'Songti SC', 'NSimSun', 'STSong'];
 
-// 样式表
+// style map
 export const StyleMap = {
   fontFamily: 'font-family',
   textAlign: 'text-align',
@@ -71,14 +72,14 @@ export const StyleMap = {
   fontStyle: 'font-style',
 };
 
-// 对齐
+// align
 export const AlignMap = {
   left: AlignmentType.LEFT,
   center: AlignmentType.CENTER,
   right: AlignmentType.RIGHT,
 };
 
-// 标签样式
+// style with tag
 export const TagStyleMap = {
   strong: 'font-weight: bold;',
   em: 'font-style: italic;',
@@ -92,20 +93,20 @@ export const TagStyleMap = {
   h6: 'font-weight: bold; font-size: 13px; line-height: 1.5;',
 };
 
-// 方向
+// Direction
 export const Direction = {
   left: 'left',
   right: 'right',
 };
 
-// 尺寸
+// Size
 export const Size = {
   em: 'em',
   px: 'px',
   pt: 'pt',
 };
 
-// 单线
+// single line
 export const SingleLine = { type: 'single', color: '3d4757' };
 
 export const Tag = {
@@ -113,9 +114,28 @@ export const Tag = {
   text: 'text',
 };
 
-// 默认边框
+// default border style
 export const DefaultBorder = {
   style: BorderStyle.SINGLE,
   size: 0,
   color: '#fff',
+};
+
+// heading dict
+export const headingMap = {
+  h1: { level: HeadingLevel.HEADING_1, size: 48, color: '00000b' },
+  h2: { level: HeadingLevel.HEADING_2, size: 36, color: '00000b' },
+  h3: { level: HeadingLevel.HEADING_3, size: 24, color: '00000b' },
+  h4: { level: HeadingLevel.HEADING_4, size: 18, color: '00000b' },
+  h5: { level: HeadingLevel.HEADING_5, size: 15, color: '00000b' },
+  h6: { level: HeadingLevel.HEADING_6, size: 13, color: '00000b' },
+};
+
+export const DocStyle_Default = {
+  heading1: getHeadingRunStyle('h1'),
+  heading2: getHeadingRunStyle('h2'),
+  heading3: getHeadingRunStyle('h3'),
+  heading4: getHeadingRunStyle('h4'),
+  heading5: getHeadingRunStyle('h5'),
+  heading6: getHeadingRunStyle('h6'),
 };

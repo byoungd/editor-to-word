@@ -8,6 +8,7 @@ import {
   D_TableBorderSize,
   DefaultBorder,
   Direction,
+  DocStyle_Default,
   PXbyPT,
   PXbyTWIPS,
   SingleLine,
@@ -24,10 +25,11 @@ import {
   Document,
   Footer,
   Header,
-  HeadingLevel,
   HeightRule,
   IParagraphOptions,
+  ISectionOptions,
   Packer,
+  PageOrientation,
   Paragraph,
   ParagraphChild,
   Table,
@@ -42,7 +44,6 @@ import {
 import {
   CellParam,
   HTMLString,
-  Heading,
   IPageLayout,
   IndentType,
   Node,
@@ -75,16 +76,6 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 export const WPS_TABLE_WIDTH_TWIPS = 9035;
-
-// heading dict
-const headingMap = {
-  h1: { level: HeadingLevel.HEADING_1, size: 48, color: '00000b' },
-  h2: { level: HeadingLevel.HEADING_2, size: 36, color: '00000b' },
-  h3: { level: HeadingLevel.HEADING_3, size: 24, color: '00000b' },
-  h4: { level: HeadingLevel.HEADING_4, size: 18, color: '00000b' },
-  h5: { level: HeadingLevel.HEADING_5, size: 15, color: '00000b' },
-  h6: { level: HeadingLevel.HEADING_6, size: 13, color: '00000b' },
-};
 
 // text node
 export const isTextNode = (node: Node) => node && node.type === 'text';
@@ -495,26 +486,6 @@ export const tableCreator = (tableNode: Node) => {
   return table;
 };
 
-const getHeadingRunStyle = (heading: Heading) => {
-  const size = headingMap[heading].size;
-  return {
-    run: {
-      size,
-      bold: true,
-      color: headingMap[heading].color,
-    },
-  };
-};
-
-export const DocStyle_Default = {
-  heading1: getHeadingRunStyle('h1'),
-  heading2: getHeadingRunStyle('h2'),
-  heading3: getHeadingRunStyle('h3'),
-  heading4: getHeadingRunStyle('h4'),
-  heading5: getHeadingRunStyle('h5'),
-  heading6: getHeadingRunStyle('h6'),
-};
-
 // parse '2.54cm' to 2.54
 export const numberCM = (size: string) =>
   parseFloat(size?.toUpperCase().replace(/CM/i, ''));
@@ -530,6 +501,7 @@ const defaultLayout: IPageLayout = {
   paperRotation: 0,
   rightMargin: '3.18cm',
   topMargin: '2.54cm',
+  orientation: PageOrientation.PORTRAIT,
 };
 
 // generate Document
@@ -538,8 +510,8 @@ export const genDocument = (
   layout: IPageLayout = defaultLayout
 ) => {
   const ast: Node[] = htmlToAST(html);
-  // 正文段落 过滤掉注释
-  const ps = ElementCreator(ast);
+
+  const paragraphs = ElementCreator(ast);
   const {
     orientation,
     topMargin,
@@ -568,12 +540,14 @@ export const genDocument = (
     properties: {
       page,
     },
-    children: ps,
+    children: paragraphs,
+    headers: {},
+    footers: {},
   };
 
   if (header) {
     const ast = HTMLPS.parse(header);
-    // @ts-ignore
+
     section.headers = {
       default: new Header({
         children: ElementCreator(ast),
@@ -583,7 +557,6 @@ export const genDocument = (
 
   if (footer) {
     const ast = HTMLPS.parse(footer);
-    // @ts-ignore
     section.footers = {
       default: new Footer({
         children: ElementCreator(ast),
@@ -596,7 +569,6 @@ export const genDocument = (
       default: DocStyle_Default,
       paragraphStyles: [],
     },
-    // @ts-ignore
     sections: [section],
   });
   return doc;
@@ -627,7 +599,7 @@ export interface IExportDoc {
   documentId: number;
 }
 
-// export multi file as .zip
+// export multi files as .zip
 export const exportMultiDocsAsZip = (
   docList: IExportDoc[],
   fileName = 'docs'
