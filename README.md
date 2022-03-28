@@ -10,7 +10,7 @@ Export rich-text editor content as word file (.docx) by browser 🎉.
 
 [online demo](https://editor-to-word.yu.team)
 
-## Arch
+## Architecture
 
 This project uses [`turborepo`](https://turborepo.org/) as repo management.
 
@@ -30,3 +30,10 @@ yarn build
 # 3 start next-app and visit `http://localhost:3000/`
 yarn dev
 ```
+
+## TODO
+
+- image
+- optimize table converter
+- list
+- sub/pub script
