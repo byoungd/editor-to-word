@@ -71,7 +71,7 @@ import {
   toHex,
 } from './helpers';
 
-import HTMLPS from 'html-parse-stringify';
+import { parse } from 'html-to-ast';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
@@ -515,8 +515,8 @@ export const tableCreator = (
 export const numberCM = (size: string) =>
   parseFloat(size?.toUpperCase().replace(/CM/i, ''));
 
-export const htmlToAST = (html: string) => {
-  return HTMLPS.parse(html);
+export const htmlToAST = (html: string): Node[] => {
+  return parse(html) as Node[];
 };
 
 // generate Document
@@ -561,7 +561,7 @@ export const genDocument = (html: HTMLString, options?: IExportOption) => {
   };
 
   if (header) {
-    const ast = HTMLPS.parse(header);
+    const ast = parse(header) as Node[];
 
     section.headers = {
       default: new Header({
@@ -571,7 +571,7 @@ export const genDocument = (html: HTMLString, options?: IExportOption) => {
   }
 
   if (footer) {
-    const ast = HTMLPS.parse(footer);
+    const ast = parse(footer) as Node[];
     section.footers = {
       default: new Footer({
         children: ElementCreator(ast, styleMap),

@@ -58,7 +58,7 @@
     "@types/tinycolor2": "~1.4.3"
   },
   "dependencies": {
-    "html-parse-stringify": "~3.0.1",
+    "html-to-ast": "^0.0.3",
     "jszip": "~3.7.1",
     "file-saver": "~2.0.5",
     "docx": "~7.3.0",
