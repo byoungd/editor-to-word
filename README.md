@@ -2,6 +2,14 @@
 
 Export rich-text editor content as word file (.docx) by browser 🎉.
 
+<p align='center'>
+<b>English</b> | <a href="https://github.com/byoungd/editor-to-word/blob/main/README.zh-CN.md">简体中文</a>
+</p>
+
+## Demo
+
+[online demo](https://editor-to-word.yu.team)
+
 ## Arch
 
 This project uses [`turborepo`](https://turborepo.org/) as repo management.
