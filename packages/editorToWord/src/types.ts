@@ -7,6 +7,7 @@ import {
   VerticalAlign,
   WidthType,
 } from 'docx';
+import { string } from 'yargs';
 
 export interface IPageLayout {
   orientation: PageOrientation;
@@ -23,7 +24,6 @@ export interface IPageLayout {
 
 export type HTMLString = string;
 
-// 标题类型
 export type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
 export type SizeNumber = {
@@ -46,16 +46,13 @@ export type Node = {
 
 export type HtmlNode = string | (string | {});
 
-// 样式类型
 export type StyleInterface = { key: string; val: string };
 
-// 下划线类型
 export interface UnderlineType {
   type: string;
   color: string;
 }
 
-// 缩进类型
 export interface IndentType {
   left?: number;
   right?: number;
@@ -112,4 +109,44 @@ export interface StyleOption {
   bold: boolean;
   width: string | number;
   italics: boolean;
+}
+
+export type AcceptedStyleTag =
+  | Heading
+  | 'p'
+  | 'span'
+  | 'div'
+  | 'table'
+  | 'tr'
+  | 'td'
+  | 'th'
+  | 'img'
+  | 'br'
+  | 'hr'
+  | 'em'
+  | 'strong'
+  | 'b'
+  | 'i'
+  | 'u'
+  | 'strike'
+  | 'sub'
+  | 'sup'
+  | 'code'
+  | 'pre'
+  | 'address'
+  | 'ol'
+  | 'ul'
+  | 'li'
+  | 'a'
+  | 'del'
+  | 'cite'
+  | 'time';
+
+export type CustomTagStyleMap = Partial<{
+  [k in AcceptedStyleTag]: string;
+}>;
+
+export interface IExportOption {
+  tagStyleMap?: CustomTagStyleMap;
+  layout?: IPageLayout;
 }

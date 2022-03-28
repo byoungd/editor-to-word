@@ -1,6 +1,12 @@
-import { AlignmentType, BorderStyle, HeadingLevel } from 'docx';
+import {
+  AlignmentType,
+  BorderStyle,
+  HeadingLevel,
+  PageOrientation,
+} from 'docx';
 
 import { getHeadingRunStyle } from './helpers';
+import { IPageLayout } from './types';
 
 export const Splitter_Colon = ':';
 
@@ -80,7 +86,8 @@ export const AlignMap = {
 };
 
 // style with tag
-export const TagStyleMap = {
+export const D_TagStyleMap = {
+  p: 'line-height: 1.5;',
   strong: 'font-weight: bold;',
   em: 'font-style: italic;',
   u: 'text-decoration: underline;',
@@ -91,6 +98,15 @@ export const TagStyleMap = {
   h4: 'font-weight: bold; font-size: 18px; line-height: 1.5;',
   h5: 'font-weight: bold; font-size: 15px; line-height: 1.5;',
   h6: 'font-weight: bold; font-size: 13px; line-height: 1.5;',
+};
+
+// default paper layout
+export const D_Layout: IPageLayout = {
+  bottomMargin: '2.54cm',
+  leftMargin: '3.18cm',
+  rightMargin: '3.18cm',
+  topMargin: '2.54cm',
+  orientation: PageOrientation.PORTRAIT,
 };
 
 // Direction
