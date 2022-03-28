@@ -10,6 +10,11 @@ Export rich-text editor content as word file (.docx) by browser 🎉.
 
 [online demo](https://editor-to-word.yu.team)
 
+## Snapshot
+
+![tinymce](./assets/tinymce.png)
+![tinymce](./assets/word-mac.png)
+
 ## Architecture
 
 This project uses [`turborepo`](https://turborepo.org/) as repo management.
