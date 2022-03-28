@@ -51,6 +51,7 @@ import {
   TableParam,
   CustomTagStyleMap,
   IExportOption,
+  IExportDoc,
 } from './types';
 import { getUniqueArrayByKey, isFilledArray, typeOf, trimHtml } from './utils';
 import {
@@ -589,14 +590,14 @@ export const genDocument = (html: HTMLString, options?: IExportOption) => {
 };
 
 // export html as docx file
-export const exportAsDocx = (doc: Document, docName = '') => {
+export const exportAsDocx = async (doc: Document, docName = '') => {
   Packer.toBlob(doc).then((blob) => {
     saveAs(blob, `${docName}.docx`);
   });
 };
 
 // html -> docx
-export const exportHtmlToDocx = (
+export const exportHtmlToDocx = async (
   html: HTMLString,
   docName = 'doc',
   options?: IExportOption
@@ -606,24 +607,18 @@ export const exportHtmlToDocx = (
   return doc;
 };
 
-export interface IExportDoc {
-  id: string;
-  name: string;
-  html: string;
-  documentId: number;
-}
-
 // export multi files as .zip
-export const exportMultiDocsAsZip = (
+export const exportMultiDocsAsZip = async (
   docList: IExportDoc[],
-  fileName = 'docs'
+  fileName = 'docs',
+  options?: IExportOption
 ) => {
   const zip = new JSZip();
   const len = docList.length;
   if (len === 1) {
     const d = docList[0];
     const { html, name } = d;
-    const file = genDocument(trimHtml(html));
+    const file = genDocument(trimHtml(html), options);
     exportAsDocx(file, name);
     return;
   }

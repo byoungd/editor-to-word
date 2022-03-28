@@ -1,6 +1,14 @@
 {
   "version": "0.0.4",
   "license": "MIT",
+  "keywords": [
+    "html to word",
+    "html to docx",
+    "export editor content",
+    "export html",
+    "download html",
+    "editor to word"
+  ],
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [

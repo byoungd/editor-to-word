@@ -7,7 +7,6 @@ import {
   VerticalAlign,
   WidthType,
 } from 'docx';
-import { string } from 'yargs';
 
 export interface IPageLayout {
   orientation: PageOrientation;
@@ -149,4 +148,11 @@ export type CustomTagStyleMap = Partial<{
 export interface IExportOption {
   tagStyleMap?: CustomTagStyleMap;
   layout?: IPageLayout;
+}
+
+export interface IExportDoc {
+  id: string;
+  name: string;
+  html: string;
+  documentId: number;
 }
