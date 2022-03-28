@@ -3,11 +3,6 @@ import { StyleMap, headingMap } from './default';
 import { Heading } from './types';
 import tinycolor from 'tinycolor2';
 
-export const removeTagDIV = (str: string) => {
-  const reg = /<div[^>]*?>|<\/div>/gi;
-  return str.replace(reg, '');
-};
-
 export const isTextDecoration = (key: string) =>
   key === StyleMap.textDecoration;
 export const isPadding = (key: string) => key.indexOf('padding-') > -1;

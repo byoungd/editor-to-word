@@ -51,7 +51,7 @@ import {
   StyleOption,
   TableParam,
 } from './types';
-import { getUniqueArrayByKey, isFilledArray, typeOf } from './utils';
+import { getUniqueArrayByKey, isFilledArray, typeOf, trimHtml } from './utils';
 import {
   isAlign,
   isBold,
@@ -66,7 +66,6 @@ import {
   isValidColor,
   isVerticalAlign,
   isWidth,
-  removeTagDIV,
   toHex,
 } from './helpers';
 
@@ -210,6 +209,8 @@ export const calcTextRunStyle = (styleList: string[]) => {
         const isEM = type.match(Size.em);
         const isPX = type.match(Size.px);
         const isPT = type.match(Size.pt);
+
+        // TODO:  to optimize
         if (isEM) {
           indent.left = value * oneCharSizePT;
           styleOption.indent = indent;
@@ -586,7 +587,7 @@ export const exportHtmlToDocx = (
   docName = 'doc',
   layout: IPageLayout = defaultLayout
 ) => {
-  const doc = genDocument(removeTagDIV(html), layout);
+  const doc = genDocument(trimHtml(html), layout);
   exportAsDocx(doc, docName);
   return doc;
 };
@@ -608,13 +609,13 @@ export const exportMultiDocsAsZip = (
   if (len === 1) {
     const d = docList[0];
     const { html, name } = d;
-    const file = genDocument(removeTagDIV(html));
+    const file = genDocument(trimHtml(html));
     exportAsDocx(file, name);
     return;
   }
   docList.forEach((docFile, idx: number) => {
     const { html, name } = docFile;
-    const file = genDocument(removeTagDIV(html));
+    const file = genDocument(trimHtml(html));
     Packer.toBlob(file).then((blob) => {
       zip.file(`${name}.docx`, blob, { binary: true });
       if (idx === len - 1) {

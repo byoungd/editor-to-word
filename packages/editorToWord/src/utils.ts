@@ -36,3 +36,20 @@ export const getUniqueArrayByKey = <T>(arr: T[], uniqueKey = 'id'): T[] => {
     return item;
   }, [] as T[]);
 };
+
+export const removeTagDIV = (str: string) => {
+  const reg = /<div[^>]*?>|<\/div>/gi;
+  return str.replace(reg, '');
+};
+
+export const escape2Html = (str: string) => {
+  const arrEntities = { lt: '<', gt: '>', nbsp: ' ', amp: '&', quot: '"' };
+  return str.replace(/&(lt|gt|nbsp|amp|quot);/gi, function (_, t) {
+    // @ts-ignore
+    return arrEntities[t];
+  });
+};
+
+export const trimHtml = (str: string) => {
+  return removeTagDIV(escape2Html(str));
+};
