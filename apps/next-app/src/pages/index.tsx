@@ -5,8 +5,14 @@ import { useRef } from 'react'
 
 const Home = () => {
   const demoHtml = `
-<p>Paste <span style="color: rgb(224, 62, 45);" data-mce-style="color: #e03e2d;">text</span> here or write them...</p><h2>Found a bug?</h2><p>If you think you have found a bug please create an issue on the GitHub repo to report it to the developers.</p><h2>Finally ...</h2><p><br data-mce-bogus="1"></p><p>Don't forget to check out our other product Plupload, your ultimate upload solution featuring HTML5 upload support.</p><p>Thanks for supporting TinyMCE! We hope it helps you and your users create great content.<br>All the best from the TinyMCE team.</p><p style="text-align: right;" data-mce-style="text-align: right;">2022.03.28</p>
-  `
+  <p>Paste <span style="color: #e03e2d;">text</span> here or write them...</p>
+  <h2><span style="text-decoration: line-through;">Found a bug</span>?</h2>
+  <p>If you think you have found a bug please create an issue on the GitHub repo to report it to the developers.</p>
+  <h2><em>Finally ...</em></h2>
+  <p>&nbsp;</p>
+  <p><span style="text-decoration: underline;">Don't forget to check </span>out our other product Plupload, your ultimate upload solution featuring HTML5 upload support.</p>
+  <p>Thanks for supporting TinyMCE! We hope it helps you and your users create great content.<br /><span style="background-color: #b96ad9;">All the best from the TinyMCE team.</span></p>
+  <p style="text-align: right;">2022.03.28</p>`
 
   const editorRef = useRef<Editor['editor'] | null>(null)
   const handleDownload = () => {
@@ -39,9 +45,9 @@ const Home = () => {
             ],
             toolbar:
               'undo redo | formatselect | ' +
-              'bold italic forecolor | alignleft aligncenter ' +
+              'bold italic forecolor backcolor underline strikethrough | alignleft aligncenter ' +
               'alignright alignjustify | bullist numlist outdent indent | ' +
-              'removeformat | help',
+              'removeformat | code',
             content_style:
               'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
           }}
