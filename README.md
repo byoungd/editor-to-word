@@ -38,7 +38,6 @@ yarn dev
 
 ## TODO
 
-- image
 - optimize table converter
 - list
 - sub/pub script
