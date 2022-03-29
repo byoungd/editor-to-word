@@ -211,11 +211,11 @@ export const ElementCreator = (
       children: [],
     };
     if (type === Tag.text && content) {
-      // @ts-ignore
-      return new Paragraph({
+      const paragraphOption = {
         ...para,
         ...calcTextRunStyle(style, tagStyleMap),
-      });
+      };
+      return new Paragraph(paragraphOption);
     } else if (
       name !== Tag.table &&
       children &&
@@ -223,11 +223,11 @@ export const ElementCreator = (
       children.length > 0
     ) {
       para.children = getChildrenByTextRun(children, tagStyleMap);
-      const options = {
+      const paragraphOption = {
         ...para,
         ...calcTextRunStyle(style, tagStyleMap),
-      } as IParagraphOptions;
-      return new Paragraph(options);
+      };
+      return new Paragraph(paragraphOption);
     } else if (name === Tag.table) {
       return tableCreator(node, tagStyleMap);
     } else {
@@ -531,3 +531,5 @@ export const exportMultiDocsAsZip = async (
 };
 
 export const exportAsZip = exportMultiDocsAsZip;
+
+export { IExportDoc, IExportOption };

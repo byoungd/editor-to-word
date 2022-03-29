@@ -1,4 +1,5 @@
 import {
+  AlignmentType,
   BorderStyle,
   PageOrientation,
   Paragraph,
@@ -106,7 +107,7 @@ export interface StyleOption {
   underline?: UnderlineType;
   color?: string;
   highlight?: string;
-  alignment?: string;
+  alignment?: AlignmentType;
   verticalAlign?: VerticalAlign;
   spacing?: SpacingType;
   font?: string;
@@ -163,8 +164,8 @@ export interface IExportOption {
 }
 
 export interface IExportDoc {
-  id: string;
+  id?: string;
   name: string;
   html: string;
-  documentId: number;
+  documentId?: number;
 }

@@ -1,5 +1,5 @@
 {
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "MIT",
   "keywords": [
     "html to word",
@@ -58,7 +58,7 @@
     "@types/tinycolor2": "~1.4.3"
   },
   "dependencies": {
-    "html-to-ast": "^0.0.5",
+    "html-to-ast": "^0.0.6",
     "jszip": "~3.7.1",
     "file-saver": "~2.0.5",
     "docx": "~7.3.0",
