@@ -164,8 +164,6 @@ export interface IExportOption {
 }
 
 export interface IExportDoc {
-  id?: string;
   name: string;
   html: string;
-  documentId?: number;
 }

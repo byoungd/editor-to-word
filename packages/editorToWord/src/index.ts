@@ -5,7 +5,6 @@ import {
   D_PageTableFullWidth,
   D_TableBorderSize,
   DefaultBorder,
-  DocStyle_Default,
   PXbyPT,
   Splitter_Colon,
   Splitter_Semicolon,
@@ -475,7 +474,6 @@ export const genDocument = (html: HTMLString, options?: IExportOption) => {
 
   const doc = new Document({
     styles: {
-      default: DocStyle_Default,
       paragraphStyles: [],
     },
     sections: [section],
@@ -516,17 +514,15 @@ export const exportMultiDocsAsZip = async (
     exportAsDocx(file, name);
     return;
   }
-  docList.forEach((docFile, idx: number) => {
+  for (let docFile of docList) {
     const { html, name } = docFile;
-    const file = genDocument(trimHtml(html));
-    Packer.toBlob(file).then((blob) => {
-      zip.file(`${name}.docx`, blob, { binary: true });
-      if (idx === len - 1) {
-        zip.generateAsync({ type: 'blob' }).then((content) => {
-          saveAs(content, `${fileName}.zip`);
-        });
-      }
-    });
+    const doc = genDocument(trimHtml(html), options);
+    const file = await Packer.toBlob(doc);
+    zip.file(`${name}.docx`, file);
+  }
+
+  zip.generateAsync({ type: 'blob' }).then((content) => {
+    saveAs(content, `${fileName}.zip`);
   });
 };
 

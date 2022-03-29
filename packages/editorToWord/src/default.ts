@@ -116,33 +116,3 @@ export const DefaultBorder = {
   size: 0,
   color: '#fff',
 };
-
-// heading dict
-export const headingMap = {
-  h1: { level: HeadingLevel.HEADING_1, size: 48, color: '00000b' },
-  h2: { level: HeadingLevel.HEADING_2, size: 36, color: '00000b' },
-  h3: { level: HeadingLevel.HEADING_3, size: 24, color: '00000b' },
-  h4: { level: HeadingLevel.HEADING_4, size: 18, color: '00000b' },
-  h5: { level: HeadingLevel.HEADING_5, size: 15, color: '00000b' },
-  h6: { level: HeadingLevel.HEADING_6, size: 13, color: '00000b' },
-};
-
-export const getHeadingRunStyle = (heading: Heading) => {
-  const size = headingMap[heading].size;
-  return {
-    run: {
-      size,
-      bold: true,
-      color: headingMap[heading].color,
-    },
-  };
-};
-
-export const DocStyle_Default = {
-  heading1: getHeadingRunStyle('h1'),
-  heading2: getHeadingRunStyle('h2'),
-  heading3: getHeadingRunStyle('h3'),
-  heading4: getHeadingRunStyle('h4'),
-  heading5: getHeadingRunStyle('h5'),
-  heading6: getHeadingRunStyle('h6'),
-};
