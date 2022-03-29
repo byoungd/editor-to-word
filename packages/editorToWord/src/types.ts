@@ -2,6 +2,7 @@ import {
   BorderStyle,
   PageOrientation,
   Paragraph,
+  ShadingType,
   TableLayoutType,
   TableRow,
   VerticalAlign,
@@ -92,22 +93,33 @@ export interface SpacingType {
   line: number;
 }
 
+export interface Shading {
+  fill?: string;
+  color?: string;
+  type?: ShadingType;
+}
+
 export interface StyleOption {
-  size: number;
-  strike: boolean;
-  indent: IndentType;
-  underline: UnderlineType;
-  color: string;
-  alignment: string;
-  verticalAlign: VerticalAlign;
-  spacing: SpacingType;
-  font: string;
-  borderColor: string;
-  tWidth: number;
-  tHeight: number;
-  bold: boolean;
-  width: string | number;
-  italics: boolean;
+  size?: number;
+  strike?: boolean;
+  indent?: IndentType;
+  underline?: UnderlineType;
+  color?: string;
+  highlight?: string;
+  alignment?: string;
+  verticalAlign?: VerticalAlign;
+  spacing?: SpacingType;
+  font?: string;
+  borderColor?: string;
+  tWidth?: number;
+  tHeight?: number;
+  bold?: boolean;
+  width?: string | number;
+  italics?: boolean;
+  superScript?: boolean;
+  subScript?: boolean;
+  shading?: Shading;
+  break?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 }
 
 export type AcceptedStyleTag =

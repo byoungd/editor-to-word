@@ -1,3 +1,5 @@
+import tinycolor from 'tinycolor2';
+
 function typeOf(obj: unknown) {
   const toString = Object.prototype.toString;
   const map = {
@@ -53,3 +55,10 @@ export const escape2Html = (str: string) => {
 export const trimHtml = (str: string) => {
   return removeTagDIV(escape2Html(str));
 };
+
+export const deepCopyByJSON = <T>(obj: T) =>
+  JSON.parse(JSON.stringify(obj)) as T;
+
+export const isValidColor = (color: string) => tinycolor(color).isValid();
+
+export const toHex = (color: string) => tinycolor(color).toHexString();

@@ -1,27 +1,19 @@
 import {
   A4MillimetersWidth,
-  AlignMap,
   CELL_MARGIN,
   D_FontSizePT,
-  D_LineHeight,
   D_PageTableFullWidth,
   D_TableBorderSize,
   DefaultBorder,
-  Direction,
   DocStyle_Default,
   PXbyPT,
-  PXbyTWIPS,
-  SingleLine,
-  Size,
   Splitter_Colon,
   Splitter_Semicolon,
-  StyleMap,
   Tag,
   D_TagStyleMap,
   D_Layout,
 } from './default';
 import {
-  AlignmentType,
   BorderStyle,
   Document,
   Footer,
@@ -36,16 +28,13 @@ import {
   TableLayoutType,
   TableRow,
   TextRun,
-  VerticalAlign,
   WidthType,
   convertMillimetersToTwip,
 } from 'docx';
 import {
   CellParam,
   HTMLString,
-  IndentType,
   Node,
-  SizeNumber,
   StyleInterface,
   StyleOption,
   TableParam,
@@ -53,29 +42,21 @@ import {
   IExportOption,
   IExportDoc,
 } from './types';
-import { getUniqueArrayByKey, isFilledArray, typeOf, trimHtml } from './utils';
 import {
-  isAlign,
-  isBold,
-  isBorderColor,
-  isFontFamily,
-  isFontStyle,
-  isHeight,
-  isLineHeight,
-  isPadding,
-  isTextDecoration,
-  isTextIndent,
+  getUniqueArrayByKey,
+  isFilledArray,
+  typeOf,
+  trimHtml,
   isValidColor,
-  isVerticalAlign,
-  isWidth,
   toHex,
-} from './helpers';
+} from './utils';
+import { provideStyle } from './token';
 
 import { parse } from 'html-to-ast';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-
-export const WPS_TABLE_WIDTH_TWIPS = 9035;
+import { handleSizeNumber } from './helpers';
+import { StyleMap } from './token/styleMap';
 
 // text node
 export const isTextNode = (node: Node) => node && node.type === 'text';
@@ -142,19 +123,6 @@ export const toFlatStyleList = (
   return getUniqueArrayByKey(inlined, 'key');
 };
 
-/**
- * parse size
- */
-export const handleSizeNumber = (val: string): SizeNumber => {
-  const m = val.match(/\d+(.\d+)?/g);
-  if (val.match(/\d+(.\d+)?/g) && m && Array.isArray(m) && m[0]) {
-    const target = m[0];
-    const type = target ? val.replace(new RegExp(target, 'g'), '') : '';
-    return { value: parseFloat(target), type };
-  }
-  return { type: 'UNKNOWN', value: 0 };
-};
-
 // text creator
 export const calcTextRunStyle = (
   styleList: string[],
@@ -194,83 +162,9 @@ export const calcTextRunStyle = (
     styleOption.size = D_FontSizePT * 2;
   }
 
-  inlined.forEach(({ key, val }: StyleInterface) => {
-    if (Object.values(StyleMap).includes(key)) {
-      if (!key || !val) return;
+  const inlinedStyleOption = provideStyle(inlined);
 
-      if (isTextDecoration(key)) {
-        if (val === StyleMap.lineThrough) {
-          styleOption.strike = true;
-        } else if (val === StyleMap.underline) {
-          styleOption.underline = SingleLine;
-        }
-      } else if (key === StyleMap.color) {
-        styleOption.color = val.replace(/#/g, '');
-      } else if (isPadding(key) || isTextIndent(key)) {
-        const [, dire = Direction.left] = key.split('-');
-        const { value, type } = handleSizeNumber(val);
-
-        // handle indent
-        const indent: Partial<IndentType> = {};
-
-        // @ts-ignore
-        const oneCharSizePT = (styleOption.size / PXbyPT / 2) * PXbyTWIPS;
-
-        const isEM = type.match(Size.em);
-        const isPX = type.match(Size.px);
-        const isPT = type.match(Size.pt);
-
-        // TODO:  to optimize
-        if (isEM) {
-          indent.left = value * oneCharSizePT;
-          styleOption.indent = indent;
-        } else if (isPX) {
-          // @ts-ignore
-          indent[dire] = (value / 20) * oneCharSizePT;
-          styleOption.indent = indent;
-        } else if (isPT) {
-          // @ts-ignore
-          indent[dire] = (value / D_FontSizePT) * oneCharSizePT;
-          styleOption.indent = indent;
-        }
-      } else if (isAlign(key)) {
-        styleOption.alignment =
-          AlignMap[val as keyof typeof AlignMap] || AlignmentType.CENTER;
-        styleOption.verticalAlign = VerticalAlign.CENTER;
-      } else if (isLineHeight(key)) {
-        const spacing = { before: 0, after: 0, line: 240 * D_LineHeight };
-        const { value, type } = handleSizeNumber(val);
-        if (value) {
-          spacing.line = type === '%' ? (value / 100) * 240 : value * 240;
-        }
-        styleOption.spacing = spacing;
-      } else if (isFontFamily(key)) {
-        if (val.indexOf(',') === -1 && val.indexOf(' ') === -1) {
-          styleOption.font = val;
-        }
-      } else if (isVerticalAlign(key)) {
-        styleOption.verticalAlign = VerticalAlign.CENTER;
-      } else if (isBorderColor(key)) {
-        styleOption.borderColor = val.replace(/#/i, '');
-      } else if (isWidth(key)) {
-        const w = parseFloat(val.replace(/%/i, ''));
-        styleOption.tWidth = w;
-      } else if (isHeight(key)) {
-        const h = parseFloat(val.replace(/px/i, ''));
-        styleOption.tHeight = h;
-      } else if (isBold(key)) {
-        if (val.toLowerCase() === 'bold') {
-          styleOption.bold = true;
-        }
-      } else if (isFontStyle(key)) {
-        if (val.toLowerCase() === 'italic') {
-          styleOption.italics = true;
-        }
-      }
-    }
-  });
-
-  return styleOption;
+  return { ...styleOption, ...inlinedStyleOption };
 };
 
 // map children as ParagraphChild

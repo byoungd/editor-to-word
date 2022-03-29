@@ -5,8 +5,7 @@ import {
   PageOrientation,
 } from 'docx';
 
-import { getHeadingRunStyle } from './helpers';
-import { IPageLayout } from './types';
+import { Heading, IPageLayout } from './types';
 
 export const Splitter_Colon = ':';
 
@@ -57,27 +56,6 @@ export const HP = 5000;
 // font family songti
 export const FontSongTi = ['SimSun', '宋体', 'Songti SC', 'NSimSun', 'STSong'];
 
-// style map
-export const StyleMap = {
-  fontFamily: 'font-family',
-  textAlign: 'text-align',
-  paddingRight: 'padding-right',
-  paddingLeft: 'padding-left',
-  lineHeight: 'line-height',
-  fontSize: 'font-size',
-  color: 'color',
-  textDecoration: 'text-decoration',
-  textIndent: 'text-indent',
-  borderColor: 'border-color',
-  height: 'height',
-  width: 'width',
-  fontWeight: 'font-weight',
-  verticalAlign: 'vertical-align',
-  lineThrough: 'line-through',
-  underline: 'underline',
-  fontStyle: 'font-style',
-};
-
 // align
 export const AlignMap = {
   left: AlignmentType.LEFT,
@@ -98,6 +76,8 @@ export const D_TagStyleMap = {
   h4: 'font-weight: bold; font-size: 18px; line-height: 1.5;',
   h5: 'font-weight: bold; font-size: 15px; line-height: 1.5;',
   h6: 'font-weight: bold; font-size: 13px; line-height: 1.5;',
+  sub: 'subscript: true;',
+  sup: 'superscript: true;',
 };
 
 // default paper layout
@@ -145,6 +125,17 @@ export const headingMap = {
   h4: { level: HeadingLevel.HEADING_4, size: 18, color: '00000b' },
   h5: { level: HeadingLevel.HEADING_5, size: 15, color: '00000b' },
   h6: { level: HeadingLevel.HEADING_6, size: 13, color: '00000b' },
+};
+
+export const getHeadingRunStyle = (heading: Heading) => {
+  const size = headingMap[heading].size;
+  return {
+    run: {
+      size,
+      bold: true,
+      color: headingMap[heading].color,
+    },
+  };
 };
 
 export const DocStyle_Default = {
