@@ -1,11 +1,6 @@
-import {
-  AlignmentType,
-  BorderStyle,
-  HeadingLevel,
-  PageOrientation,
-} from 'docx';
+import { AlignmentType, BorderStyle, PageOrientation } from 'docx';
 
-import { Heading, IPageLayout } from './types';
+import { IPageLayout } from './types';
 
 export const Splitter_Colon = ':';
 
