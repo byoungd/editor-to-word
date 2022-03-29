@@ -5960,10 +5960,10 @@ html-escaper@^2.0.0:
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.2.tgz#dfd60027da36a36dfcbe236262c00a5822681453"
   integrity sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==
 
-html-to-ast@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/html-to-ast/-/html-to-ast-0.0.3.tgz#d099272d88336f404a4dfea71d3b255e4c790f46"
-  integrity sha512-jF0uKcvUf+V3zzt+EAyZEBJLlvRP7AS8uDY88U+a8I61yTHZE2yEIDErfCSDeXdtVg84Q0FeKemxsLu4t3E3Wg==
+html-to-ast@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/html-to-ast/-/html-to-ast-0.0.6.tgz#d3c2b84d7e1dd38b3a1295e2ea5c0600964c64c6"
+  integrity sha512-gAq/8l6laJ8cTufIhh9lMvonShc8xBzAth+t7yK6oDla8rMVGKyYqToa7HgZyPKyi1KTX+HBTvQg2uQ3wc7Q9w==
 
 http-cache-semantics@^4.0.0:
   version "4.1.0"
