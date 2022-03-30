@@ -1,5 +1,10 @@
 import { demo, demo1 } from '../demo'
-import { exportHtmlToDocx, exportMultiDocsAsZip } from 'editor-to-word'
+import {
+  ElementCreator,
+  exportHtmlToDocx,
+  exportMultiDocsAsZip,
+  htmlToAST,
+} from 'editor-to-word'
 import { useRef, useState } from 'react'
 
 import { Editor } from '@tinymce/tinymce-react'
@@ -38,6 +43,15 @@ const Home = () => {
     if (editorRef.current) {
       const html = editorRef.current.getContent()
       exportHtmlToDocx(html, 'test')
+    }
+  }
+
+  const testElement = () => {
+    if (editorRef.current) {
+      const html = editorRef.current.getContent()
+      const nodes = htmlToAST(html)
+      console.log(nodes)
+      console.log(ElementCreator(nodes, {}))
     }
   }
 
@@ -100,6 +114,7 @@ const Home = () => {
             download two copy
           </button>
         </div>
+        <button onClick={testElement}>test</button>
       </main>
     </div>
   )

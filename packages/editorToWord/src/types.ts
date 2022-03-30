@@ -39,7 +39,7 @@ export type Node = {
   content: string;
   children: Node[];
   name: string;
-  style: string[];
+  shape: string[];
   attrs: Attr;
   text: string;
   voidElement: boolean;

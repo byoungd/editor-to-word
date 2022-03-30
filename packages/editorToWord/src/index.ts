@@ -2,15 +2,15 @@ import {
   A4MillimetersWidth,
   CELL_MARGIN,
   D_FontSizePT,
+  D_Layout,
   D_PageTableFullWidth,
   D_TableBorderSize,
+  D_TagStyleMap,
   DefaultBorder,
   PXbyPT,
   Splitter_Colon,
   Splitter_Semicolon,
   Tag,
-  D_TagStyleMap,
-  D_Layout,
 } from './default';
 import {
   BorderStyle,
@@ -32,30 +32,30 @@ import {
 } from 'docx';
 import {
   CellParam,
+  CustomTagStyleMap,
   HTMLString,
+  IExportDoc,
+  IExportOption,
   Node,
   StyleInterface,
   StyleOption,
   TableParam,
-  CustomTagStyleMap,
-  IExportOption,
-  IExportDoc,
 } from './types';
 import {
   getUniqueArrayByKey,
   isFilledArray,
-  typeOf,
-  trimHtml,
   isValidColor,
   toHex,
+  trimHtml,
+  typeOf,
 } from './utils';
-import { provideStyle } from './token';
 
-import { parse } from 'html-to-ast';
 import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import { handleSizeNumber } from './helpers';
 import { StyleMap } from './token/styleMap';
+import { handleSizeNumber } from './helpers';
+import { parse } from 'html-to-ast';
+import { provideStyle } from './token';
+import { saveAs } from 'file-saver';
 
 // text node
 export const isTextNode = (node: Node) => node && node.type === 'text';
@@ -75,25 +75,29 @@ export const getInnerTextNode = (node: Node) => {
 export const chainStyle = (
   nodeList: Node[],
   style: string[] = [],
-  tagStyleMap: CustomTagStyleMap
+  tagStyleMap: CustomTagStyleMap = D_TagStyleMap
 ) => {
   if (!nodeList || !isFilledArray(nodeList)) return;
+
   nodeList.forEach((node) => {
     const { attrs, children, name } = node;
     let STYLE: string[] =
-      typeof attrs?.style === 'string' ? [attrs.style, ...style, name] : style;
-    if (Object.keys(tagStyleMap).includes(name)) {
-      STYLE = [name, ...STYLE];
-    }
-    node.style = STYLE;
+      typeof attrs?.style === 'string' ? [attrs.style, ...style] : style;
+
+    const shape = name ? [name, ...STYLE] : [...STYLE];
+    node.shape = shape;
+
     if (isFilledArray(children)) {
-      chainStyle(children, STYLE, tagStyleMap);
+      chainStyle(children, shape, tagStyleMap);
     }
   });
 };
 
 // style builder
-export const StyleBuilder = (list: Node[], tagStyleMap: CustomTagStyleMap) => {
+export const StyleBuilder = (
+  list: Node[],
+  tagStyleMap: CustomTagStyleMap = D_TagStyleMap
+) => {
   const nList = [...list];
   chainStyle(nList, [], tagStyleMap);
   return nList;
@@ -106,6 +110,7 @@ export const toFlatStyleList = (
   styleStringList: string[]
 ): StyleInterface[] => {
   const inlined = styleStringList
+    .filter((str) => !!str)
     .map((str) => str.split(`${Splitter_Semicolon}`))
     .flat()
     .filter((str) => str && str.indexOf(`${Splitter_Colon}`) > -1)
@@ -175,11 +180,11 @@ export const getChildrenByTextRun = (
   const concatText = (list: Node[], arr: ParagraphChild[]) => {
     list.forEach((n) => {
       if (isFillTextNode(n)) {
-        const { style } = n;
+        const { shape } = n;
         const textBuildParam = { text: n.content };
 
         const styleOption =
-          style && style.length ? calcTextRunStyle(style, tagStyleMap) : {};
+          shape && shape.length ? calcTextRunStyle(shape, tagStyleMap) : {};
         // @ts-ignore
         arr.push(new TextRun({ ...textBuildParam, ...styleOption }));
       } else if (isFilledArray(n.children)) {
@@ -195,7 +200,7 @@ export const getChildrenByTextRun = (
 // element creator
 export const ElementCreator = (
   astList: Node[],
-  tagStyleMap: CustomTagStyleMap
+  tagStyleMap: CustomTagStyleMap = D_TagStyleMap
 ): Paragraph[] => {
   if (!astList || astList.length === 0) return [];
   const tags = StyleBuilder(
@@ -204,7 +209,7 @@ export const ElementCreator = (
   );
   if (!tags) return [];
   const ps = tags.map((node: Node) => {
-    const { type, name, children, content, style } = node;
+    const { type, name, children, content, shape } = node;
     const para: { text: string; children: ParagraphChild[] } = {
       text: content,
       children: [],
@@ -212,7 +217,7 @@ export const ElementCreator = (
     if (type === Tag.text && content) {
       const paragraphOption = {
         ...para,
-        ...calcTextRunStyle(style, tagStyleMap),
+        ...calcTextRunStyle(shape, tagStyleMap),
       };
       return new Paragraph(paragraphOption);
     } else if (
@@ -224,7 +229,7 @@ export const ElementCreator = (
       para.children = getChildrenByTextRun(children, tagStyleMap);
       const paragraphOption = {
         ...para,
-        ...calcTextRunStyle(style, tagStyleMap),
+        ...calcTextRunStyle(shape, tagStyleMap),
       };
       return new Paragraph(paragraphOption);
     } else if (name === Tag.table) {
@@ -242,7 +247,7 @@ export const tableCreator = (
   tableNode: Node,
   tagStyleMap: CustomTagStyleMap
 ) => {
-  const { children: tc, attrs, style } = tableNode;
+  const { children: tc, attrs, shape } = tableNode;
 
   const isTBody = (n: Node) => n.name === 'tbody';
   const tbody = tc.find(isTBody);
@@ -259,7 +264,7 @@ export const tableCreator = (
     rows: [],
   };
 
-  const styleOp = calcTextRunStyle(style, tagStyleMap);
+  const styleOp = calcTextRunStyle(shape, tagStyleMap);
 
   // take table width as 100% (1)
   let tableWidthPR = 1;
@@ -305,14 +310,14 @@ export const tableCreator = (
   const rows = trs.map((tr, idx) => {
     const { children } = tr;
 
-    let trHeight = calcTextRunStyle(tr.style, tagStyleMap).tHeight;
+    let trHeight = calcTextRunStyle(tr.shape, tagStyleMap).tHeight;
 
     const tds = children.filter(isTd);
     const cellChildren = tds.map((td) => {
-      const { attrs, style } = td;
+      const { attrs, shape } = td;
       const texts = getChildrenByTextRun(td.children, tagStyleMap);
 
-      const tdStyleOption = calcTextRunStyle(style, tagStyleMap);
+      const tdStyleOption = calcTextRunStyle(shape, tagStyleMap);
 
       if (trHeight && tdStyleOption.tHeight) {
         trHeight = Math.max(trHeight, tdStyleOption.tHeight);
@@ -366,7 +371,7 @@ export const tableCreator = (
 
       const tableCells = {
         ...cellParam,
-        ...calcTextRunStyle(style, tagStyleMap),
+        ...calcTextRunStyle(shape, tagStyleMap),
         margins,
       };
       // @ts-ignore
