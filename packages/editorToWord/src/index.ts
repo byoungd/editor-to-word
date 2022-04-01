@@ -1,67 +1,31 @@
 import {
-  A4MillimetersWidth,
-  CELL_MARGIN,
-  D_FontSizePT,
-  D_Layout,
-  D_PageTableFullWidth,
-  D_TableBorderSize,
-  D_TagStyleMap,
-  DefaultBorder,
-  PXbyPT,
-  Splitter_Colon,
-  Splitter_Semicolon,
-  Tag,
-} from './default';
-import {
-  BorderStyle,
-  Document,
-  Footer,
-  Header,
-  HeightRule,
-  IParagraphOptions,
-  Packer,
-  Paragraph,
-  ParagraphChild,
-  Table,
-  TableCell,
-  TableLayoutType,
-  TableRow,
-  TextRun,
-  WidthType,
-  convertMillimetersToTwip,
-} from 'docx';
-import {
-  CellParam,
   CustomTagStyleMap,
   HTMLString,
   IExportDoc,
   IExportOption,
   Node,
-  StyleInterface,
-  StyleOption,
-  TableParam,
 } from './types';
+import { D_Layout, D_TagStyleMap, Tag } from './default';
 import {
-  getUniqueArrayByKey,
-  isFilledArray,
-  isValidColor,
-  toHex,
-  trimHtml,
-  typeOf,
-} from './utils';
+  Document,
+  Footer,
+  Header,
+  Packer,
+  Paragraph,
+  ParagraphChild,
+  Table,
+  convertMillimetersToTwip,
+} from 'docx';
+import { calcTextRunStyle, getChildrenByTextRun } from './builder/text';
+import { isFilledArray, trimHtml } from './utils';
+import { tableCreator, tableNodeToITableOptions } from './builder/table';
 
 import JSZip from 'jszip';
-import { StyleMap } from './token/styleMap';
-import { handleSizeNumber } from './helpers';
 import { parse } from 'html-to-ast';
-import { provideStyle } from './token';
 import { saveAs } from 'file-saver';
 
 // text node
 export const isTextNode = (node: Node) => node && node.type === 'text';
-
-export const isFillTextNode = (node: Node) =>
-  node && node.type === 'text' && node.content;
 
 export const getInnerTextNode = (node: Node) => {
   let inner = node;
@@ -101,100 +65,6 @@ export const StyleBuilder = (
   const nList = [...list];
   chainStyle(nList, [], tagStyleMap);
   return nList;
-};
-
-/**
- * convert styles to flat array
- */
-export const toFlatStyleList = (
-  styleStringList: string[]
-): StyleInterface[] => {
-  const inlined = styleStringList
-    .filter((str) => !!str)
-    .map((str) => str.split(`${Splitter_Semicolon}`))
-    .flat()
-    .filter((str) => str && str.indexOf(`${Splitter_Colon}`) > -1)
-    .map((attr) => {
-      const [key, val] = attr.trim().split(Splitter_Colon);
-      const v = typeOf(val) === 'string' ? val.trim().replace(/;/i, '') : val;
-      const value = isValidColor(v) ? toHex(v) : v;
-      return {
-        key: key.trim(),
-        val: value,
-      };
-    });
-
-  return getUniqueArrayByKey(inlined, 'key');
-};
-
-// text creator
-export const calcTextRunStyle = (
-  styleList: string[],
-  tagStyleMap: CustomTagStyleMap
-) => {
-  const styleOption: Partial<StyleOption> = {};
-  if (!styleList || styleList.length === 0) return styleOption;
-  const tagList = Object.keys(tagStyleMap);
-
-  // handle tag style like: em del strong...
-  const tagStyleList: string[] = styleList.filter((str) =>
-    tagList.includes(str)
-  );
-
-  const styles = tagStyleList
-    .map((str) => tagStyleMap[str as keyof typeof tagStyleMap])
-    .filter((str) => str !== undefined) as string[];
-
-  // flat inline styles
-  const inlined = toFlatStyleList([...styleList, ...styles]);
-
-  const fontSizeSty = inlined.find(
-    (sty: StyleInterface) => sty.key === StyleMap.fontSize
-  );
-
-  const fontSize =
-    fontSizeSty && fontSizeSty.val ? handleSizeNumber(fontSizeSty.val) : null;
-
-  /**
-   * size(halfPts): Set the font size, measured in half-points
-   */
-  if (fontSize) {
-    const { value, type } = fontSize;
-    const size = type === 'pt' ? value * 2 : value * PXbyPT * 2;
-    styleOption.size = size;
-  } else {
-    styleOption.size = D_FontSizePT * 2;
-  }
-
-  const inlinedStyleOption = provideStyle(inlined);
-
-  return { ...styleOption, ...inlinedStyleOption };
-};
-
-// map children as ParagraphChild
-export const getChildrenByTextRun = (
-  nodeList: Node[],
-  tagStyleMap: CustomTagStyleMap
-): ParagraphChild[] => {
-  const texts: ParagraphChild[] = [];
-  const concatText = (list: Node[], arr: ParagraphChild[]) => {
-    list.forEach((n) => {
-      if (isFillTextNode(n)) {
-        const { shape } = n;
-        const textBuildParam = { text: n.content };
-
-        const styleOption =
-          shape && shape.length ? calcTextRunStyle(shape, tagStyleMap) : {};
-        // @ts-ignore
-        arr.push(new TextRun({ ...textBuildParam, ...styleOption }));
-      } else if (isFilledArray(n.children)) {
-        concatText(n.children, arr);
-      }
-    });
-  };
-  concatText(nodeList, texts);
-
-  return texts;
 };
 
 // element creator
@@ -240,173 +110,6 @@ export const ElementCreator = (
   });
   // @ts-ignore
   return ps.filter((p) => p instanceof Paragraph || p instanceof Table);
-};
-
-// table creator
-export const tableCreator = (
-  tableNode: Node,
-  tagStyleMap: CustomTagStyleMap
-) => {
-  const { children: tc, attrs, shape } = tableNode;
-
-  const isTBody = (n: Node) => n.name === 'tbody';
-  const tbody = tc.find(isTBody);
-  if (!tbody) return null;
-
-  const tableParam: TableParam = {
-    layout: TableLayoutType.FIXED,
-    borders: {
-      top: DefaultBorder,
-      left: DefaultBorder,
-      right: DefaultBorder,
-      bottom: DefaultBorder,
-    },
-    rows: [],
-  };
-
-  const styleOp = calcTextRunStyle(shape, tagStyleMap);
-
-  // take table width as 100% (1)
-  let tableWidthPR = 1;
-  const width = styleOp.width || '100%';
-  if (width) {
-    tableWidthPR = parseFloat((width as string).replace(/%/i, '')) / 100;
-  }
-  const { border } = attrs;
-  const borderSize = border ? parseFloat(border as string) : D_TableBorderSize;
-  const borderColor = styleOp.borderColor || '000000';
-
-  const borders = {
-    top: {
-      style: BorderStyle.SINGLE,
-      size: borderSize * 10,
-      color: borderColor,
-    },
-    right: {
-      style: BorderStyle.SINGLE,
-      size: borderSize * 10,
-      color: borderColor,
-    },
-    bottom: {
-      style: BorderStyle.SINGLE,
-      size: borderSize * 10,
-      color: borderColor,
-    },
-    left: {
-      style: BorderStyle.SINGLE,
-      size: borderSize * 10,
-      color: borderColor,
-    },
-  };
-
-  tableParam.borders = borders;
-
-  const isTr = (n: Node) => n.name === 'tr';
-  const isTd = (n: Node) => n.name === 'td';
-
-  const firstRowColumnSize: number[] = [];
-
-  const trs = tbody.children.filter(isTr);
-  const rows = trs.map((tr, idx) => {
-    const { children } = tr;
-
-    let trHeight = calcTextRunStyle(tr.shape, tagStyleMap).tHeight;
-
-    const tds = children.filter(isTd);
-    const cellChildren = tds.map((td) => {
-      const { attrs, shape } = td;
-      const texts = getChildrenByTextRun(td.children, tagStyleMap);
-
-      const tdStyleOption = calcTextRunStyle(shape, tagStyleMap);
-
-      if (trHeight && tdStyleOption.tHeight) {
-        trHeight = Math.max(trHeight, tdStyleOption.tHeight);
-      } else {
-        trHeight = 30;
-      }
-
-      const cellParam: CellParam = {
-        children: [
-          new Paragraph({
-            children: texts,
-            ...tdStyleOption,
-          } as IParagraphOptions),
-        ],
-      };
-
-      if (attrs.colspan && attrs.colspan !== '0') {
-        cellParam.columnSpan = Number(attrs.colspan);
-      }
-
-      if (attrs.rowspan && attrs.rowspan !== '0') {
-        cellParam.rowSpan = Number(attrs.rowspan);
-      }
-
-      const size = convertMillimetersToTwip(
-        ((tdStyleOption.tWidth || 0 * tableWidthPR) / 100) * A4MillimetersWidth
-      );
-
-      cellParam.width = {
-        size: tdStyleOption.tWidth || 0,
-        type: WidthType.PERCENTAGE,
-      };
-
-      if (idx === 0) {
-        if (cellParam.columnSpan) {
-          for (let i = 0; i < cellParam.columnSpan; i++) {
-            firstRowColumnSize.push(size / cellParam.columnSpan);
-          }
-        } else {
-          firstRowColumnSize.push(size);
-        }
-      }
-
-      const margins = {
-        marginUnitType: WidthType.DXA,
-        top: CELL_MARGIN,
-        bottom: CELL_MARGIN,
-        left: CELL_MARGIN,
-        right: CELL_MARGIN,
-      };
-
-      const tableCells = {
-        ...cellParam,
-        ...calcTextRunStyle(shape, tagStyleMap),
-        margins,
-      };
-      // @ts-ignore
-      return new TableCell(tableCells);
-    });
-
-    const para = {
-      children: cellChildren,
-    };
-
-    const h =
-      convertMillimetersToTwip(
-        (trHeight || 0 * A4MillimetersWidth) / D_PageTableFullWidth
-      ) +
-      CELL_MARGIN * 2;
-    // @ts-ignore
-    para.height = { value: h, rule: HeightRule.ATLEAST };
-
-    return new TableRow(para);
-  });
-
-  function calcTableWidth(colsArr: number[]) {
-    return colsArr.reduce((prev, cur) => prev + cur, 0);
-  }
-
-  tableParam.columnWidths = firstRowColumnSize;
-
-  tableParam.width = {
-    size: calcTableWidth(firstRowColumnSize),
-    type: WidthType.DXA,
-  };
-  tableParam.rows = rows;
-
-  const table = new Table(tableParam);
-  return table;
 };
 
 // parse '2.54cm' to 2.54
@@ -534,3 +237,5 @@ export const exportMultiDocsAsZip = async (
 export const exportAsZip = exportMultiDocsAsZip;
 
 export { IExportDoc, IExportOption };
+
+export { parse, tableNodeToITableOptions, D_Layout, D_TagStyleMap };

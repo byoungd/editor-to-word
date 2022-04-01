@@ -45,6 +45,9 @@ export const CELL_MARGIN = 80;
 //table border width in px
 export const D_TableBorderSize = 2;
 
+// table cell height in px
+export const D_TableCellHeightPx = 52.3594;
+
 // full width in twips
 export const HP = 5000;
 
