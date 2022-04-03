@@ -28,7 +28,7 @@ export const toFlatStyleList = (
   styleStringList: string[]
 ): StyleInterface[] => {
   const inlined = styleStringList
-    .filter((str) => !!str)
+    .filter(Boolean)
     .map((str) => str.split(`${Splitter_Semicolon}`))
     .flat()
     .filter((str) => str && str.indexOf(`${Splitter_Colon}`) > -1)
@@ -61,7 +61,7 @@ export const calcTextRunStyle = (
 
   const styles = tagStyleList
     .map((str) => tagStyleMap[str as keyof typeof tagStyleMap])
-    .filter((str) => str !== undefined) as string[];
+    .filter(Boolean) as string[];
 
   // flat inline styles
   const inlined = toFlatStyleList([...styleList, ...styles]);
