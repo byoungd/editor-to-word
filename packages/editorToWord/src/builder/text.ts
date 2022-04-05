@@ -1,11 +1,13 @@
+import { TagType } from './../default';
 import { CustomTagStyleMap, Node, StyleInterface, StyleOption } from '../types';
 import {
   D_FontSizePT,
+  D_TagStyleMap,
   PXbyPT,
   Splitter_Colon,
   Splitter_Semicolon,
 } from '../default';
-import { IRunOptions, ParagraphChild, TextRun } from 'docx';
+import { ExternalHyperlink, IRunOptions, ParagraphChild, TextRun } from 'docx';
 import {
   getUniqueArrayByKey,
   isFilledArray,
@@ -15,15 +17,11 @@ import {
 } from '../utils';
 
 import { StyleMap } from '../token/styleMap';
-import { handleSizeNumber } from '../helpers';
+import { handleSizeNumber } from '../utils';
 import { provideStyle } from '../token';
+import { isFillTextNode } from '../isNodeType';
 
-export const isFillTextNode = (node: Node) =>
-  node && node.type === 'text' && node.content;
-
-/**
- * convert styles to flat array
- */
+// convert styles to flat array
 export const toFlatStyleList = (
   styleStringList: string[]
 ): StyleInterface[] => {
@@ -31,7 +29,7 @@ export const toFlatStyleList = (
     .filter(Boolean)
     .map((str) => str.split(`${Splitter_Semicolon}`))
     .flat()
-    .filter((str) => str && str.indexOf(`${Splitter_Colon}`) > -1)
+    .filter((str) => str.indexOf(`${Splitter_Colon}`) > -1)
     .map((attr) => {
       const [key, val] = attr.trim().split(Splitter_Colon);
       const v = typeOf(val) === 'string' ? val.trim().replace(/;/i, '') : val;
@@ -48,7 +46,7 @@ export const toFlatStyleList = (
 // text creator
 export const calcTextRunStyle = (
   styleList: string[],
-  tagStyleMap: CustomTagStyleMap
+  tagStyleMap: CustomTagStyleMap = D_TagStyleMap
 ) => {
   const styleOption: Partial<StyleOption> = {};
   if (!styleList || styleList.length === 0) return styleOption;
@@ -89,25 +87,41 @@ export const calcTextRunStyle = (
   return { ...styleOption, ...inlinedStyleOption };
 };
 
+export const textCreator = (
+  node: Node,
+  tagStyleMap: CustomTagStyleMap = D_TagStyleMap
+) => {
+  const { shape } = node;
+
+  const textBuildParam = { text: node.content };
+
+  const styleOption =
+    shape && shape.length ? calcTextRunStyle(shape, tagStyleMap) : {};
+  return new TextRun({ ...textBuildParam, ...styleOption } as IRunOptions);
+};
+
 // map children as ParagraphChild
 export const getChildrenByTextRun = (
   nodeList: Node[],
-  tagStyleMap: CustomTagStyleMap
+  tagStyleMap: CustomTagStyleMap = D_TagStyleMap
 ): ParagraphChild[] => {
   const texts: ParagraphChild[] = [];
   const concatText = (list: Node[], arr: ParagraphChild[]) => {
-    list.forEach((n) => {
-      if (isFillTextNode(n)) {
-        const { shape } = n;
-        const textBuildParam = { text: n.content };
-
-        const styleOption =
-          shape && shape.length ? calcTextRunStyle(shape, tagStyleMap) : {};
-        arr.push(
-          new TextRun({ ...textBuildParam, ...styleOption } as IRunOptions)
-        );
-      } else if (isFilledArray(n.children)) {
-        concatText(n.children, arr);
+    list.forEach((node) => {
+      if (isFillTextNode(node)) {
+        arr.push(textCreator(node, tagStyleMap));
+      } else if (isFilledArray(node.children)) {
+        // deal with hyperlink
+        if (node.name === TagType.link) {
+          const { attrs } = node;
+          const text = new ExternalHyperlink({
+            children: getChildrenByTextRun(node.children, tagStyleMap),
+            link: attrs.href ? String(attrs.href) : '',
+          });
+          arr.push(text);
+        } else {
+          concatText(node.children, arr);
+        }
       }
     });
   };

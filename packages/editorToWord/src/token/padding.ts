@@ -1,6 +1,6 @@
 import { D_FontSizePX } from './../default';
 import { Direction, D_FontSizePT, PXbyPT, PXbyTWIPS, Size } from '../default';
-import { handleSizeNumber } from '../helpers';
+import { handleSizeNumber } from '../utils';
 import { IndentType } from '../types';
 import { deepCopyByJSON } from './../utils';
 import { TokenHandler } from './types';

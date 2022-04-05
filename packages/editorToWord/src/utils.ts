@@ -62,3 +62,22 @@ export const deepCopyByJSON = <T>(obj: T) =>
 export const isValidColor = (color: string) => tinycolor(color).isValid();
 
 export const toHex = (color: string) => tinycolor(color).toHexString();
+
+import { SizeNumber } from './types';
+
+/**
+ * parse size
+ */
+export const handleSizeNumber = (val: string): SizeNumber => {
+  const m = val.match(/\d+(.\d+)?/g);
+  if (val.match(/\d+(.\d+)?/g) && m && Array.isArray(m) && m[0]) {
+    const target = m[0];
+    const type = target ? val.replace(new RegExp(target, 'g'), '') : '';
+    return { value: parseFloat(target), type };
+  }
+  return { type: 'UNKNOWN', value: 0 };
+};
+
+// parse '2.54cm' to 2.54
+export const numberCM = (size: string) =>
+  parseFloat(size?.toUpperCase().replace(/CM/i, ''));

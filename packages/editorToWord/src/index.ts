@@ -5,27 +5,23 @@ import {
   IExportOption,
   Node,
 } from './types';
-import { D_Layout, D_TagStyleMap, Tag } from './default';
+import { D_Layout, D_TagStyleMap } from './default';
 import {
   Document,
   Footer,
   Header,
   Packer,
   Paragraph,
-  ParagraphChild,
-  Table,
   convertMillimetersToTwip,
 } from 'docx';
-import { calcTextRunStyle, getChildrenByTextRun } from './builder/text';
-import { isFilledArray, trimHtml } from './utils';
-import { tableCreator, tableNodeToITableOptions } from './builder/table';
+
+import { isFilledArray, trimHtml, numberCM } from './utils';
+import { tableNodeToITableOptions } from './builder/table';
 
 import JSZip from 'jszip';
 import { parse } from 'html-to-ast';
 import { saveAs } from 'file-saver';
-
-// text node
-export const isTextNode = (node: Node) => node && node.type === 'text';
+import { contentBuilder } from './builder';
 
 export const getInnerTextNode = (node: Node) => {
   let inner = node;
@@ -78,44 +74,15 @@ export const ElementCreator = (
     tagStyleMap
   );
   if (!tags) return [];
-  const ps = tags.map((node: Node) => {
-    const { type, name, children, content, shape } = node;
-    const para: { text: string; children: ParagraphChild[] } = {
-      text: content,
-      children: [],
-    };
-    if (type === Tag.text && content) {
-      const paragraphOption = {
-        ...para,
-        ...calcTextRunStyle(shape, tagStyleMap),
-      };
-      return new Paragraph(paragraphOption);
-    } else if (
-      name !== Tag.table &&
-      children &&
-      isFilledArray(children) &&
-      children.length > 0
-    ) {
-      para.children = getChildrenByTextRun(children, tagStyleMap);
-      const paragraphOption = {
-        ...para,
-        ...calcTextRunStyle(shape, tagStyleMap),
-      };
-      return new Paragraph(paragraphOption);
-    } else if (name === Tag.table) {
-      return tableCreator(node, tagStyleMap);
-    } else {
-      return null;
-    }
-  });
-  // @ts-ignore
-  return ps.filter((p) => p instanceof Paragraph || p instanceof Table);
+  const ps = tags
+    .map((node: Node) => {
+      return contentBuilder(node, tagStyleMap);
+    })
+    .filter(Boolean);
+  return [...ps] as Paragraph[];
 };
 
-// parse '2.54cm' to 2.54
-export const numberCM = (size: string) =>
-  parseFloat(size?.toUpperCase().replace(/CM/i, ''));
-
+// parse html string into Node list
 export const htmlToAST = (html: string): Node[] => {
   return parse(html) as Node[];
 };

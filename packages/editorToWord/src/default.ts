@@ -42,11 +42,13 @@ export const A4MillimetersWidth = 145.4;
 // table cell margin in px
 export const CELL_MARGIN = 80;
 
-//table border width in px
+// table border width in px
 export const D_TableBorderSize = 2;
 
 // table cell height in px
 export const D_TableCellHeightPx = 52.3594;
+
+// line height
 
 // full width in twips
 export const HP = 5000;
@@ -61,21 +63,24 @@ export const AlignMap = {
   right: AlignmentType.RIGHT,
 };
 
+export const hyperlinkColor = '#007AFF';
+
 // style with tag
 export const D_TagStyleMap = {
-  p: 'line-height: 1.5;',
+  p: 'line-height: ${D_LineHeight};',
   strong: 'font-weight: bold;',
   em: 'font-style: italic;',
   u: 'text-decoration: underline;',
   del: 'text-decoration: line-through;',
-  h1: 'font-weight: bold; font-size: 40px; line-height: 1.5;',
-  h2: 'font-weight: bold; font-size: 36px; line-height: 1.5;',
-  h3: 'font-weight: bold; font-size: 24px; line-height: 1.5;',
-  h4: 'font-weight: bold; font-size: 18px; line-height: 1.5;',
-  h5: 'font-weight: bold; font-size: 15px; line-height: 1.5;',
-  h6: 'font-weight: bold; font-size: 13px; line-height: 1.5;',
+  h1: `font-weight: bold; font-size: 40px; line-height: ${D_LineHeight};`,
+  h2: `font-weight: bold; font-size: 36px; line-height: ${D_LineHeight};`,
+  h3: `font-weight: bold; font-size: 24px; line-height: ${D_LineHeight};`,
+  h4: `font-weight: bold; font-size: 18px; line-height: ${D_LineHeight};`,
+  h5: `font-weight: bold; font-size: 15px; line-height: ${D_LineHeight};`,
+  h6: `font-weight: bold; font-size: 13px; line-height: ${D_LineHeight};`,
   sub: 'subscript: true;',
   sup: 'superscript: true;',
+  a: `text-decoration: underline; color: ${hyperlinkColor};`,
 };
 
 // default paper layout
@@ -103,8 +108,9 @@ export const Size = {
 // single line
 export const SingleLine = { type: 'single', color: '3d4757' };
 
-export const Tag = {
+export const TagType = {
   table: 'table',
+  link: 'a',
   text: 'text',
 };
 

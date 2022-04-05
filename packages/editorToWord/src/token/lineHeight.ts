@@ -1,6 +1,6 @@
 import { deepCopyByJSON } from './../utils';
 import { TokenHandler } from './types';
-import { handleSizeNumber } from '../helpers';
+import { handleSizeNumber } from '../utils';
 import { D_LineHeight } from '../default';
 
 export const lineHeightHandler: TokenHandler = ({ val }, styleOp) => {

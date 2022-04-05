@@ -22,7 +22,7 @@ import { CellParam, CustomTagStyleMap, Node, TableParam } from '../types';
 import { D_TableCellHeightPx, D_TagStyleMap, PXbyTWIPS } from './../default';
 import { calcTextRunStyle, getChildrenByTextRun } from './text';
 
-import { handleSizeNumber } from '../helpers';
+import { handleSizeNumber } from '../utils';
 
 export const calcTableWidth = (colsArr: number[]) => {
   return colsArr.reduce((prev, cur) => prev + cur, 0);
