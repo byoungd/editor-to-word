@@ -1,9 +1,9 @@
 import { demo, demo1 } from '../demo'
 import {
-  ElementCreator,
   exportHtmlToDocx,
   exportMultiDocsAsZip,
   htmlToAST,
+  tableNodeToITableOptions,
 } from 'editor-to-word'
 import { useRef, useState } from 'react'
 
@@ -46,12 +46,225 @@ const Home = () => {
     }
   }
 
+  const tableNode = {
+    type: 'tag',
+    name: 'table',
+    voidElement: false,
+    attrs: {
+      style: 'border-collapse: collapse; width: 100%; height: 72.1876px;',
+      border: '1',
+    },
+    children: [
+      {
+        type: 'text',
+        content: '\n',
+      },
+      {
+        type: 'tag',
+        name: 'tbody',
+        voidElement: false,
+        attrs: {},
+        children: [
+          {
+            type: 'text',
+            content: '\n',
+          },
+          {
+            type: 'tag',
+            name: 'tr',
+            voidElement: false,
+            attrs: {
+              style: 'height: 52.5938px;',
+            },
+            children: [
+              {
+                type: 'text',
+                content: '\n',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 52.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '1',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 52.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '&nbsp;',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 52.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '&nbsp;',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 52.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '&nbsp;',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+            ],
+          },
+          {
+            type: 'text',
+            content: ' ',
+          },
+          {
+            type: 'tag',
+            name: 'tr',
+            voidElement: false,
+            attrs: {
+              style: 'height: 19.5938px;',
+            },
+            children: [
+              {
+                type: 'text',
+                content: '\n',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 19.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '&nbsp;',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 19.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '&nbsp;',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 19.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '&nbsp;',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+              {
+                type: 'tag',
+                name: 'td',
+                voidElement: false,
+                attrs: {
+                  style: 'width: 23.0508%; height: 19.5938px;',
+                },
+                children: [
+                  {
+                    type: 'text',
+                    content: '&nbsp;',
+                  },
+                ],
+              },
+              {
+                type: 'text',
+                content: ' ',
+              },
+            ],
+          },
+          {
+            type: 'text',
+            content: ' ',
+          },
+        ],
+      },
+      {
+        type: 'text',
+        content: ' ',
+      },
+    ],
+  }
+
   const testElement = () => {
     if (editorRef.current) {
       const html = editorRef.current.getContent()
-      const nodes = htmlToAST(html)
-      console.log(nodes)
-      console.log(ElementCreator(nodes, {}))
+      const ast = htmlToAST(html)
+      console.log('ast: ', ast)
+      // @ts-ignore
+      console.log(tableNodeToITableOptions(tableNode, {}))
     }
   }
 
@@ -89,13 +302,13 @@ const Home = () => {
             plugins: [
               'advlist autolink lists link image charmap print preview anchor',
               'searchreplace visualblocks code fullscreen',
-              'insertdatetime media table paste code help wordcount',
+              'insertdatetime media table paste code help wordcount table',
             ],
             toolbar:
               'undo redo | formatselect | ' +
               'bold italic forecolor backcolor underline strikethrough | alignleft aligncenter ' +
               'alignright alignjustify | bullist numlist outdent indent | ' +
-              'removeformat | code',
+              'link | code | table',
             content_style:
               'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
           }}
