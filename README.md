@@ -38,6 +38,4 @@ yarn dev
 
 ## TODO
 
-- optimize table converter
 - list
-- sub/pub script
