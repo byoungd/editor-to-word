@@ -15,7 +15,7 @@ import {
   convertMillimetersToTwip,
 } from 'docx';
 
-import { isFilledArray, trimHtml, numberCM } from './utils';
+import { isFilledArray, trimHtml, numberCM, calcMargin } from './utils';
 import { tableNodeToITableOptions } from './builder/table';
 
 import JSZip from 'jszip';
@@ -106,10 +106,10 @@ export const genDocument = (html: HTMLString, options?: IExportOption) => {
   } = layout;
 
   const margin = {
-    top: convertMillimetersToTwip(10 * numberCM(topMargin)),
-    left: convertMillimetersToTwip(10 * numberCM(leftMargin)),
-    right: convertMillimetersToTwip(10 * numberCM(rightMargin)),
-    bottom: convertMillimetersToTwip(10 * numberCM(bottomMargin)),
+    top: calcMargin(topMargin),
+    left: calcMargin(leftMargin),
+    right: calcMargin(rightMargin),
+    bottom: calcMargin(bottomMargin),
   };
 
   const page = {

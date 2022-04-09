@@ -1,3 +1,4 @@
+import { convertMillimetersToTwip } from 'docx';
 import tinycolor from 'tinycolor2';
 
 function typeOf(obj: unknown) {
@@ -81,3 +82,7 @@ export const handleSizeNumber = (val: string): SizeNumber => {
 // parse '2.54cm' to 2.54
 export const numberCM = (size: string) =>
   parseFloat(size?.toUpperCase().replace(/CM/i, ''));
+
+// calc margin in twip
+export const calcMargin = (margin: string) =>
+  convertMillimetersToTwip(10 * numberCM(margin));
