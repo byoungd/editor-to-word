@@ -8,6 +8,7 @@ import {
   TableRow,
   VerticalAlign,
   WidthType,
+  IIndentAttributesProperties,
 } from 'docx';
 
 export interface IPageLayout {
@@ -49,14 +50,20 @@ export type HtmlNode = string | (string | {});
 
 export type StyleInterface = { key: string; val: string };
 
+export type ValueField = string | number;
+
 export interface UnderlineType {
   type: string;
   color: string;
 }
 
 export interface IndentType {
-  left?: number;
-  right?: number;
+  left?: ValueField;
+  right?: ValueField;
+  firstLine?: ValueField;
+  hanging?: ValueField;
+  start?: ValueField;
+  end?: ValueField;
 }
 
 export interface TableBorder {

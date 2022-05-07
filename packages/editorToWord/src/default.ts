@@ -96,6 +96,10 @@ export const D_Layout: IPageLayout = {
 export const Direction = {
   left: 'left',
   right: 'right',
+  firstLine: 'firstLine',
+  start: 'start',
+  end: 'end',
+  hanging: 'hanging',
 };
 
 // Size

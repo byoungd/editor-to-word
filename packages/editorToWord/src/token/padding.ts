@@ -1,17 +1,16 @@
 import { D_FontSizePX } from './../default';
-import { Direction, D_FontSizePT, PXbyPT, PXbyTWIPS, Size } from '../default';
+import { D_FontSizePT, PXbyPT, PXbyTWIPS, Size } from '../default';
 import { handleSizeNumber } from '../utils';
 import { IndentType } from '../types';
 import { deepCopyByJSON } from './../utils';
 import { TokenHandler } from './types';
 
-export const paddingHandler: TokenHandler = ({ key, val }, styleOp) => {
+export const paddingHandler: TokenHandler = ({ val }, styleOp) => {
   const styleOption = deepCopyByJSON(styleOp);
-  type Dire = keyof typeof Direction;
-  const [, dire = Direction.left] = key.split('-');
+  // type Dire = keyof typeof Direction;
+  // const [, dire = Direction.firstLine] = key.split('-');
   const { value, type } = handleSizeNumber(val);
 
-  // handle indent
   const indent: IndentType = {};
 
   const size = styleOption.size || D_FontSizePX;
@@ -22,15 +21,18 @@ export const paddingHandler: TokenHandler = ({ key, val }, styleOp) => {
   const isPX = type.match(Size.px);
   const isPT = type.match(Size.pt);
 
+  // handle text-indent
+  let indentValue = 0;
   if (isEM) {
-    indent.left = value * oneCharSizePT;
-    styleOption.indent = indent;
+    indentValue = value * oneCharSizePT;
   } else if (isPX) {
-    indent[dire as Dire] = (value / 20) * oneCharSizePT;
-    styleOption.indent = indent;
+    indentValue = (value / 20) * oneCharSizePT;
   } else if (isPT) {
-    indent[dire as Dire] = (value / D_FontSizePT) * oneCharSizePT;
-    styleOption.indent = indent;
+    indentValue = (value / D_FontSizePT) * oneCharSizePT;
   }
+  // FIXME: for now only support firstLine
+  indent.firstLine = indentValue;
+  styleOption.indent = indent;
+
   return styleOption;
 };

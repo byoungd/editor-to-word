@@ -6,16 +6,9 @@ import {
   Node,
 } from './types';
 import { D_Layout, D_TagStyleMap } from './default';
-import {
-  Document,
-  Footer,
-  Header,
-  Packer,
-  Paragraph,
-  convertMillimetersToTwip,
-} from 'docx';
+import { Document, Footer, Header, Packer, Paragraph } from 'docx';
 
-import { isFilledArray, trimHtml, numberCM, calcMargin } from './utils';
+import { isFilledArray, trimHtml, calcMargin } from './utils';
 import { tableNodeToITableOptions } from './builder/table';
 
 import JSZip from 'jszip';
