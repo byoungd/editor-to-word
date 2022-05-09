@@ -8,7 +8,6 @@ import {
   TableRow,
   VerticalAlign,
   WidthType,
-  IIndentAttributesProperties,
 } from 'docx';
 
 export interface IPageLayout {

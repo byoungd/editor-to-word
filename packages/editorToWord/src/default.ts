@@ -102,6 +102,13 @@ export const Direction = {
   hanging: 'hanging',
 };
 
+export const PaddingDirection = {
+  'padding-left': Direction.left,
+  'padding-right': Direction.right,
+  'padding-top': Direction.start,
+  'padding-bottom': Direction.end,
+};
+
 // Size
 export const Size = {
   em: 'em',
