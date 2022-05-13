@@ -1,4 +1,9 @@
-import { AlignmentType, BorderStyle, PageOrientation } from 'docx';
+import {
+  AlignmentType,
+  BorderStyle,
+  PageOrientation,
+  VerticalAlign,
+} from 'docx';
 
 import { IPageLayout } from './types';
 
@@ -130,4 +135,11 @@ export const DefaultBorder = {
   style: BorderStyle.SINGLE,
   size: 0,
   color: '#fff',
+};
+
+// table cell vertical align map
+export const verticalAlignMap = {
+  top: VerticalAlign.TOP,
+  middle: VerticalAlign.CENTER,
+  bottom: VerticalAlign.BOTTOM,
 };
