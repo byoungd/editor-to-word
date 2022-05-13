@@ -86,3 +86,13 @@ export const numberCM = (size: string) =>
 // calc margin in twip
 export const calcMargin = (margin: string) =>
   convertMillimetersToTwip(10 * numberCM(margin));
+
+export const optimizeBlankSpace = (content: string, ratio = 1) => {
+  const textWithoutBlank = content.trimEnd();
+  const blank = content.slice(textWithoutBlank.length);
+  const optimizedBlank =
+    ratio === 1 ? blank : new Array(blank.length * ratio).fill(' ').join('');
+  const text =
+    blank.length > 1 ? `${textWithoutBlank}${optimizedBlank}` + '\t' : content;
+  return text;
+};

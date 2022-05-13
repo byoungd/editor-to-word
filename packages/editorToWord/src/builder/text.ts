@@ -12,6 +12,7 @@ import {
   getUniqueArrayByKey,
   isFilledArray,
   isValidColor,
+  optimizeBlankSpace,
   toHex,
   typeOf,
 } from '../utils';
@@ -91,9 +92,9 @@ export const textCreator = (
   node: Node,
   tagStyleMap: CustomTagStyleMap = D_TagStyleMap
 ) => {
-  const { shape } = node;
+  const { shape, content } = node;
 
-  const textBuildParam = { text: node.content };
+  const textBuildParam = { text: optimizeBlankSpace(content) };
 
   const styleOption =
     shape && shape.length ? calcTextRunStyle(shape, tagStyleMap) : {};
