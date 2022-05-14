@@ -98,6 +98,7 @@ export const textCreator = (
 
   const styleOption =
     shape && shape.length ? calcTextRunStyle(shape, tagStyleMap) : {};
+
   return new TextRun({ ...textBuildParam, ...styleOption } as IRunOptions);
 };
 

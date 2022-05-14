@@ -58,10 +58,10 @@ export const D_TableCellHeightPx = 52.3594;
 // full width in twips
 export const HP = 5000;
 
-// font family songti
+// font family SimSun
 export const FontSongTi = ['SimSun', '宋体', 'Songti SC', 'NSimSun', 'STSong'];
 
-// align
+// text-align
 export const AlignMap = {
   left: AlignmentType.LEFT,
   center: AlignmentType.CENTER,

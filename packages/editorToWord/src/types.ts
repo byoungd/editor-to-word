@@ -4,6 +4,7 @@ import {
   PageOrientation,
   Paragraph,
   ShadingType,
+  Table,
   TableLayoutType,
   TableRow,
   VerticalAlign,
@@ -90,7 +91,7 @@ export type CellWidth = {
 };
 
 export interface CellParam {
-  children: Paragraph[];
+  children: (Paragraph | Table)[];
   columnSpan?: number;
   rowSpan?: number;
   width?: CellWidth;

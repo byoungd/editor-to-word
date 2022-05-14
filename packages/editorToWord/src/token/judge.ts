@@ -13,7 +13,7 @@ export const isTextDecoration = ({ key }: StyleInterface) =>
 export const isPadding = ({ key }: StyleInterface) =>
   key.indexOf('padding-') > -1;
 
-export const isAlign = ({ key }: StyleInterface) =>
+export const isTextAlign = ({ key }: StyleInterface) =>
   key.indexOf(StyleMap.textAlign) > -1;
 
 export const isLineHeight = ({ key }: StyleInterface) =>

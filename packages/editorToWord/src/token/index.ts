@@ -9,7 +9,7 @@ import { textDecorationHandler } from './textDecoration';
 import { paddingHandler } from './padding';
 import { lineHeightHandler } from './lineHeight';
 import { heightHandler } from './height';
-import { alignHandler } from './align';
+import { alignHandler } from './textAlign';
 import { boldHandler } from './bold';
 import { borderColorHandler } from './borderColor';
 import { fontFamilyHandler } from './fontFamily';
@@ -17,7 +17,7 @@ import { fontStyleHandler } from './fontStyle';
 import { textIndentHandler } from './textIndent';
 
 import {
-  isAlign,
+  isTextAlign,
   isBold,
   isColor,
   isBorderColor,
@@ -53,7 +53,7 @@ export const tokens = [
   },
   {
     name: 'align',
-    judge: isAlign,
+    judge: isTextAlign,
     handler: alignHandler,
   },
   {

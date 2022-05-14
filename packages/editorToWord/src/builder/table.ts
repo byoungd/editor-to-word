@@ -7,7 +7,6 @@ import {
 import {
   BorderStyle,
   HeightRule,
-  IParagraphOptions,
   ITableCellOptions,
   ITableOptions,
   Paragraph,
@@ -17,6 +16,7 @@ import {
   TableRow,
   WidthType,
   convertMillimetersToTwip,
+  // IParagraphOptions,
 } from 'docx';
 import { CellParam, CustomTagStyleMap, Node, TableParam } from '../types';
 import { D_TableCellHeightPx, D_TagStyleMap, PXbyTWIPS } from './../default';
@@ -115,7 +115,6 @@ export const tableNodeToITableOptions = (
     const tds = children.filter(isTd);
     const cellChildren = tds.map((td, index) => {
       const { attrs, shape } = td;
-      const texts = getChildrenByTextRun(td.children, tagStyleMap);
 
       const tdStyleOption = calcTextRunStyle(shape, tagStyleMap);
 
@@ -125,13 +124,23 @@ export const tableNodeToITableOptions = (
         trHeight = D_TableCellHeightPx;
       }
 
+      const texts = td.children.map((t) => {
+        const { shape, content, children } = t;
+        if (children?.length) {
+          const c = getChildrenByTextRun(children || [], tagStyleMap);
+          return new Paragraph({
+            children: c,
+            ...calcTextRunStyle(shape, tagStyleMap),
+          });
+        }
+        return new Paragraph({
+          text: content,
+          ...calcTextRunStyle(shape, tagStyleMap),
+        });
+      });
+
       const cellParam: CellParam = {
-        children: [
-          new Paragraph({
-            children: texts,
-            ...tdStyleOption,
-          } as IParagraphOptions),
-        ],
+        children: texts,
       };
 
       if (attrs.colspan && attrs.colspan !== '0') {
@@ -184,12 +193,9 @@ export const tableNodeToITableOptions = (
       return new TableCell(tableCells as ITableCellOptions);
     });
 
-    const defaultCellHeightValue =
-      D_TableCellHeightPx * PXbyTWIPS + CELL_MARGIN * 2;
-
     const para = {
       children: cellChildren,
-      height: { value: defaultCellHeightValue, rule: HeightRule.EXACT },
+      height: { value: 0, rule: HeightRule.EXACT },
     };
 
     const h = (trHeight ?? D_TableCellHeightPx) * PXbyTWIPS + CELL_MARGIN * 2;

@@ -1,10 +1,5 @@
 import { demo, demo1 } from '../demo'
-import {
-  exportHtmlToDocx,
-  exportMultiDocsAsZip,
-  htmlToAST,
-  tableNodeToITableOptions,
-} from 'editor-to-word'
+import { exportHtmlToDocx, exportMultiDocsAsZip } from 'editor-to-word'
 import { useRef, useState } from 'react'
 
 import { Editor } from '@tinymce/tinymce-react'
