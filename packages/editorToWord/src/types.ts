@@ -9,6 +9,7 @@ import {
   TableRow,
   VerticalAlign,
   WidthType,
+  LineRuleType,
 } from 'docx';
 
 export interface IPageLayout {
@@ -98,7 +99,10 @@ export interface CellParam {
 }
 
 export interface SpacingType {
-  line: number;
+  before?: number;
+  after?: number;
+  line?: number;
+  lineRule?: LineRuleType;
 }
 
 export interface Shading {
@@ -117,6 +121,12 @@ export interface StyleOption {
   alignment?: AlignmentType;
   verticalAlign?: VerticalAlign;
   spacing?: SpacingType;
+  contextualSpacing?: boolean;
+  outlineLevel?: number;
+  thematicBreak?: boolean;
+  keepLines?: boolean;
+  keepNext?: boolean;
+  pageBreakBefore?: boolean;
   font?: string;
   borderColor?: string;
   tWidth?: number;

@@ -79,7 +79,7 @@ const Home = () => {
             ],
             toolbar:
               'undo redo | formatselect | ' +
-              'bold italic forecolor backcolor underline strikethrough | alignleft aligncenter ' +
+              'bold italic forecolor backcolor underline strikethrough | lineheight | alignleft aligncenter ' +
               'alignright alignjustify | bullist numlist outdent indent | ' +
               'link | code | table',
             content_style:

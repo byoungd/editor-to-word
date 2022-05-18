@@ -58,14 +58,14 @@ export const calcTextRunStyle = (
     tagList.includes(str)
   );
 
-  const styles = tagStyleList
+  const inlined = tagStyleList
     .map((str) => tagStyleMap[str as keyof typeof tagStyleMap])
     .filter(Boolean) as string[];
 
   // flat inline styles
-  const inlined = toFlatStyleList([...styleList, ...styles]);
+  const styles = toFlatStyleList([...styleList, ...inlined]);
 
-  const fontSizeSty = inlined.find(
+  const fontSizeSty = styles.find(
     (sty: StyleInterface) => sty.key === StyleMap.fontSize
   );
 
@@ -83,7 +83,7 @@ export const calcTextRunStyle = (
     styleOption.size = D_FontSizePT * 2;
   }
 
-  const inlinedStyleOption = provideStyle(inlined);
+  const inlinedStyleOption = provideStyle(styles);
 
   return { ...styleOption, ...inlinedStyleOption };
 };

@@ -72,7 +72,7 @@ export const hyperlinkColor = '#007AFF';
 
 // style with tag
 export const D_TagStyleMap = {
-  p: 'line-height: ${D_LineHeight};',
+  p: `line-height: ${D_LineHeight};`,
   strong: 'font-weight: bold;',
   em: 'font-style: italic;',
   u: 'text-decoration: underline;',
