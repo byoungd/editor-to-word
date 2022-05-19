@@ -44,14 +44,14 @@ export const WPS_TABLE_WIDTH_TWIPS = 9035;
 // a4 paper size
 export const A4MillimetersWidth = 145.4;
 
-// table cell margin in px
-export const CELL_MARGIN = 80;
+// table cell margin in twips
+export const D_CELL_MARGIN = 6 * PXbyTWIPS;
 
 // table border width in px
 export const D_TableBorderSize = 2;
 
 // table cell height in px
-export const D_TableCellHeightPx = 52.3594;
+export const D_TableCellHeightPx = 18;
 
 // line height
 

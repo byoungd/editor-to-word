@@ -1,6 +1,6 @@
 import {
   A4MillimetersWidth,
-  CELL_MARGIN,
+  D_CELL_MARGIN,
   D_TableBorderSize,
   DefaultBorder,
 } from '../default';
@@ -16,7 +16,6 @@ import {
   TableRow,
   WidthType,
   convertMillimetersToTwip,
-  // IParagraphOptions,
 } from 'docx';
 import { CellParam, CustomTagStyleMap, Node, TableParam } from '../types';
 import { D_TableCellHeightPx, D_TagStyleMap, PXbyTWIPS } from './../default';
@@ -69,6 +68,9 @@ export const tableNodeToITableOptions = (
   const cols = colGroup ? getColGroupWidth(colGroup.children) : [];
   const colsTotalWidth = cols.reduce((prev, cur) => prev + cur, 0);
 
+  // Google DOCS does not support start and end borders, instead they use left and right borders.
+  // So to set left and right borders for Google DOCS you should use
+  // see https://docx.js.org/#/usage/tables
   const tableParam: TableParam = {
     layout: TableLayoutType.FIXED,
     borders: {
@@ -108,9 +110,12 @@ export const tableNodeToITableOptions = (
 
   const trs = tbody.children.filter(isTr);
   const rows = trs.map((tr, idx) => {
-    const { children } = tr;
+    const { children, attrs } = tr;
 
-    let trHeight = calcTextRunStyle(tr.shape, tagStyleMap).tHeight;
+    let trHeight = attrs?.style
+      ? calcTextRunStyle([attrs?.style as string], tagStyleMap)?.tHeight ||
+        D_TableCellHeightPx
+      : D_TableCellHeightPx;
 
     const tds = children.filter(isTd);
     const cellChildren = tds.map((td, index) => {
@@ -118,12 +123,8 @@ export const tableNodeToITableOptions = (
 
       const tdStyleOption = calcTextRunStyle(shape, tagStyleMap);
 
-      if (trHeight && tdStyleOption.tHeight) {
-        trHeight = Math.max(trHeight, tdStyleOption.tHeight);
-      } else {
-        trHeight = D_TableCellHeightPx;
-      }
-
+      // TODO: support Nested Tables and other elements
+      // use `contentBuilder` maybe better
       const texts = td.children.map((t) => {
         const { shape, content, children } = t;
         if (children?.length) {
@@ -179,18 +180,18 @@ export const tableNodeToITableOptions = (
 
       const margins = {
         marginUnitType: WidthType.DXA,
-        top: CELL_MARGIN,
-        bottom: CELL_MARGIN,
-        left: CELL_MARGIN,
-        right: CELL_MARGIN,
+        top: D_CELL_MARGIN,
+        bottom: D_CELL_MARGIN,
+        left: D_CELL_MARGIN,
+        right: D_CELL_MARGIN,
       };
 
-      const tableCells = {
+      const tableCellOptions = {
         ...cellParam,
         ...calcTextRunStyle(shape, tagStyleMap),
         margins,
       };
-      return new TableCell(tableCells as ITableCellOptions);
+      return new TableCell(tableCellOptions as ITableCellOptions);
     });
 
     const para = {
@@ -198,7 +199,7 @@ export const tableNodeToITableOptions = (
       height: { value: 0, rule: HeightRule.EXACT },
     };
 
-    const h = (trHeight ?? D_TableCellHeightPx) * PXbyTWIPS + CELL_MARGIN * 2;
+    const h = (trHeight ?? D_TableCellHeightPx) * PXbyTWIPS + D_CELL_MARGIN * 2;
 
     para.height = { value: h, rule: HeightRule.EXACT };
 
