@@ -14,6 +14,9 @@ export const Splitter_Semicolon = ';';
 // px by twips
 export const PXbyTWIPS = 15;
 
+// px by DXA
+export const PXbyDXA = 16;
+
 // px by pt
 export const PXbyPT = 3 / 4;
 
@@ -38,8 +41,8 @@ export const D_PagePaddingPX = 71;
 // default page table full width in px
 export const D_PageTableFullWidth = 642;
 
-// WPS table full width in twips
-export const WPS_TABLE_WIDTH_TWIPS = 9035;
+// default table full width in DXA
+export const D_TableFullWidth = 9035;
 
 // a4 paper size
 export const A4MillimetersWidth = 145.4;

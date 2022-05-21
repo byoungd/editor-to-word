@@ -1,10 +1,4 @@
 import {
-  A4MillimetersWidth,
-  D_CELL_MARGIN,
-  D_TableBorderSize,
-  DefaultBorder,
-} from '../default';
-import {
   BorderStyle,
   HeightRule,
   ITableCellOptions,
@@ -15,10 +9,20 @@ import {
   TableLayoutType,
   TableRow,
   WidthType,
-  convertMillimetersToTwip,
 } from 'docx';
 import { CellParam, CustomTagStyleMap, Node, TableParam } from '../types';
-import { D_TableCellHeightPx, D_TagStyleMap, PXbyTWIPS } from './../default';
+import {
+  D_CELL_MARGIN,
+  D_TableBorderSize,
+  D_TableFullWidth,
+  DefaultBorder,
+} from '../default';
+import {
+  D_TableCellHeightPx,
+  D_TagStyleMap,
+  PXbyDXA,
+  PXbyTWIPS,
+} from './../default';
 import { calcTextRunStyle, getChildrenByTextRun } from './text';
 
 import { handleSizeNumber } from '../utils';
@@ -32,10 +36,16 @@ export const getTableBorderStyleSingle = (size: number, color: string) => {
 };
 
 export const getColGroupWidth = (cols: Node[]) => {
-  return cols.map((col) => {
-    const { attrs } = col;
-    return handleSizeNumber(String(attrs.width)).value;
-  });
+  const count = cols.length;
+  const defaultWidth = count ? D_TableFullWidth / PXbyDXA / count : 0;
+  return cols
+    .filter((c) => c.name === 'col')
+    .map((col) => {
+      const { attrs } = col;
+      return (
+        PXbyDXA * (handleSizeNumber(String(attrs.width))?.value || defaultWidth)
+      );
+    });
 };
 
 export const handleCellWidthFromColgroup = (
@@ -48,12 +58,8 @@ export const handleCellWidthFromColgroup = (
     .reduce((prev, cur) => prev + cur, 0);
 };
 
-export const getCellWidthInTwips = (size: number, pr: number) => {
-  return convertMillimetersToTwip(((size * pr) / 100) * A4MillimetersWidth);
-};
-
 export const getCellWidthInDXA = (size: number) => {
-  return size * 16;
+  return size * PXbyDXA;
 };
 
 // table node to docx ITableOptions
@@ -70,7 +76,7 @@ export const tableNodeToITableOptions = (
   // deal colgroup for cell width
   const colGroup = tc.find((n) => n.name === 'colgroup');
   const cols = colGroup ? getColGroupWidth(colGroup.children) : [];
-  const colsTotalWidth = cols.reduce((prev, cur) => prev + cur, 0);
+  // const colsTotalWidth = cols.reduce((prev, cur) => prev + cur, 0);
 
   // Google DOCS does not support start and end borders, instead they use left and right borders.
   // So to set left and right borders for Google DOCS you should use
@@ -105,7 +111,7 @@ export const tableNodeToITableOptions = (
   const isTd = (n: Node) => n.name === 'td';
 
   const firstRowColumnSize: number[] = [];
-
+  let hasColGroup = false;
   const trs = tbody.children.filter(isTr);
   const rows = trs.map((tr, idx) => {
     const { children, attrs } = tr;
@@ -150,16 +156,19 @@ export const tableNodeToITableOptions = (
         cellParam.rowSpan = Number(attrs.rowspan);
       }
 
-      if (cols.length) {
-        const pr =
-          handleCellWidthFromColgroup(cols, index, cellParam.columnSpan || 1) /
-          colsTotalWidth;
-        tdStyleOption.tWidth = pr * 100;
+      hasColGroup = !!cols.length && cols.every((c) => c !== 0);
+
+      if (hasColGroup) {
+        const width = handleCellWidthFromColgroup(
+          cols,
+          index,
+          cellParam.columnSpan || 1
+        );
+
+        tdStyleOption.tWidth = width;
       }
 
-      const cellWidth = getCellWidthInDXA(tdStyleOption.tWidth || 188.4);
-
-      console.log('size: ', cellWidth, tdStyleOption);
+      const cellWidth = getCellWidthInDXA(tdStyleOption.tWidth || 185);
 
       cellParam.width = {
         size: cellWidth,
@@ -189,6 +198,7 @@ export const tableNodeToITableOptions = (
         ...calcTextRunStyle(shape, tagStyleMap),
         margins,
       };
+
       return new TableCell(tableCellOptions as ITableCellOptions);
     });
 
@@ -204,10 +214,11 @@ export const tableNodeToITableOptions = (
     return new TableRow(para);
   });
 
-  tableParam.columnWidths = firstRowColumnSize;
+  const tableWidths = hasColGroup ? cols : firstRowColumnSize;
+  tableParam.columnWidths = tableWidths;
 
   tableParam.width = {
-    size: calcTableWidth(firstRowColumnSize),
+    size: calcTableWidth(tableWidths),
     type: WidthType.DXA,
   };
   tableParam.rows = rows;
