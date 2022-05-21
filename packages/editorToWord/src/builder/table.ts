@@ -148,12 +148,13 @@ export const tableNodeToITableOptions = (
         children: texts,
       };
 
-      if (attrs.colspan && attrs.colspan !== '0') {
-        cellParam.columnSpan = Number(attrs.colspan);
+      const { colspan, rowspan } = attrs;
+      if (colspan && Number(colspan) !== 0) {
+        cellParam.columnSpan = Number(colspan);
       }
 
-      if (attrs.rowspan && attrs.rowspan !== '0') {
-        cellParam.rowSpan = Number(attrs.rowspan);
+      if (rowspan && Number(rowspan) !== 0) {
+        cellParam.rowSpan = Number(rowspan);
       }
 
       hasColGroup = !!cols.length && cols.every((c) => c !== 0);

@@ -48,7 +48,7 @@ export const D_TableFullWidth = 9035;
 export const A4MillimetersWidth = 145.4;
 
 // table cell margin in twips
-export const D_CELL_MARGIN = 6 * PXbyTWIPS;
+export const D_CELL_MARGIN = 4 * PXbyTWIPS;
 
 // table border width in px
 export const D_TableBorderSize = 2;
