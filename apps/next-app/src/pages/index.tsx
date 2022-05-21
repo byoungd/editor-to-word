@@ -84,6 +84,8 @@ const Home = () => {
               'link | code | table',
             content_style:
               'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+            table_use_colgroups: true,
+            table_sizing_mode: 'fixed',
           }}
         />
         <div className="flex justify-around w-full mt-5">

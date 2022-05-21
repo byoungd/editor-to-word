@@ -53,11 +53,6 @@ export const D_TableBorderSize = 2;
 // table cell height in px
 export const D_TableCellHeightPx = 18;
 
-// line height
-
-// full width in twips
-export const HP = 5000;
-
 // font family SimSun
 export const FontSongTi = ['SimSun', '宋体', 'Songti SC', 'NSimSun', 'STSong'];
 

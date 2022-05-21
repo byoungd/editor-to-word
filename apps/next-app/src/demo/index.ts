@@ -4,20 +4,20 @@ export const demo = `<h1>Hello Editor!</h1>
 <h2><span style="text-decoration: line-through;">Found a bug</span>?</h2>
 <p>If you think you have found a bug please create an issue on the GitHub repo to report it to the developers.</p>
 <p>&nbsp;</p>
-<table style="border-collapse: collapse; width: 100%; height: 160.375px;" border="1">
+<table style="border-collapse: collapse; width: 550px; height: 160.367px;" border="1">
 <tbody>
 <tr style="height: 19.5938px;">
-<td style="width: 33.484%; height: 19.5938px;">Table</td>
-<td style="height: 19.5938px; width: 66.516%;" colspan="2">&nbsp;</td>
+<td style="width: 121.547px; height: 19.5938px;">Table</td>
+<td style="height: 19.5938px; width: 376.453px;" colspan="2">&nbsp;</td>
 </tr>
-<tr style="height: 140.781px;">
-<td style="width: 33.484%; height: 140.781px; vertical-align: bottom;">
+<tr style="height: 140.773px;">
+<td style="width: 121.547px; height: 140.773px; vertical-align: bottom;">
 <p style="text-align: center;"><span style="color: #f1c40f;"><strong>center</strong></span></p>
 <p style="text-align: right;"><span style="color: #e03e2d;">right</span></p>
 <p style="text-align: left;"><span style="color: #2dc26b;">left</span></p>
 </td>
-<td style="width: 33.258%; height: 140.781px;">&nbsp;</td>
-<td style="width: 33.2579%; height: 140.781px;">&nbsp;</td>
+<td style="width: 64.2109px; height: 140.773px;">&nbsp;</td>
+<td style="width: 312.242px; height: 140.773px;">&nbsp;</td>
 </tr>
 </tbody>
 </table>

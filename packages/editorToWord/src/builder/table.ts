@@ -52,6 +52,10 @@ export const getCellWidthInTwips = (size: number, pr: number) => {
   return convertMillimetersToTwip(((size * pr) / 100) * A4MillimetersWidth);
 };
 
+export const getCellWidthInDXA = (size: number) => {
+  return size * 16;
+};
+
 // table node to docx ITableOptions
 export const tableNodeToITableOptions = (
   tableNode: Node,
@@ -84,15 +88,9 @@ export const tableNodeToITableOptions = (
 
   const styleOp = calcTextRunStyle(shape, tagStyleMap);
 
-  // take table width as 100% (1)
-  let tableWidthPR = 1;
-  const width = styleOp.width || '100%';
-  if (width) {
-    tableWidthPR = parseFloat((width as string).replace(/%/i, '')) / 100;
-  }
   const { border } = attrs;
   const borderSize = border ? parseFloat(border as string) : D_TableBorderSize;
-  const borderColor = styleOp.borderColor || '000000';
+  const borderColor = styleOp.borderColor || '333333';
 
   const borders = {
     top: getTableBorderStyleSingle(borderSize, borderColor),
@@ -159,22 +157,22 @@ export const tableNodeToITableOptions = (
         tdStyleOption.tWidth = pr * 100;
       }
 
-      const size = tdStyleOption.tWidth
-        ? getCellWidthInTwips(tdStyleOption.tWidth, tableWidthPR)
-        : getCellWidthInTwips(33.33, tableWidthPR);
+      const cellWidth = getCellWidthInDXA(tdStyleOption.tWidth || 188.4);
+
+      console.log('size: ', cellWidth, tdStyleOption);
 
       cellParam.width = {
-        size: tdStyleOption.tWidth || 0,
-        type: WidthType.PERCENTAGE,
+        size: cellWidth,
+        type: WidthType.DXA,
       };
 
       if (idx === 0) {
         if (cellParam.columnSpan) {
           for (let i = 0; i < cellParam.columnSpan; i++) {
-            firstRowColumnSize.push(size / cellParam.columnSpan);
+            firstRowColumnSize.push(cellWidth / cellParam.columnSpan);
           }
         } else {
-          firstRowColumnSize.push(size);
+          firstRowColumnSize.push(cellWidth);
         }
       }
 
