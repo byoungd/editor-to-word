@@ -17,12 +17,7 @@ import {
   D_TableFullWidth,
   DefaultBorder,
 } from '../default';
-import {
-  D_TableCellHeightPx,
-  D_TagStyleMap,
-  PXbyDXA,
-  PXbyTWIPS,
-} from './../default';
+import { D_TableCellHeightPx, D_TagStyleMap, PXbyTWIPS } from './../default';
 import { calcTextRunStyle, getChildrenByTextRun } from './text';
 
 import { handleSizeNumber } from '../utils';
@@ -37,13 +32,14 @@ export const getTableBorderStyleSingle = (size: number, color: string) => {
 
 export const getColGroupWidth = (cols: Node[]) => {
   const count = cols.length;
-  const defaultWidth = count ? D_TableFullWidth / PXbyDXA / count : 0;
+  const defaultWidth = count ? D_TableFullWidth / PXbyTWIPS / count : 0;
   return cols
     .filter((c) => c.name === 'col')
     .map((col) => {
       const { attrs } = col;
       return (
-        PXbyDXA * (handleSizeNumber(String(attrs.width))?.value || defaultWidth)
+        PXbyTWIPS *
+        (handleSizeNumber(String(attrs.width))?.value || defaultWidth)
       );
     });
 };
@@ -59,7 +55,7 @@ export const handleCellWidthFromColgroup = (
 };
 
 export const getCellWidthInDXA = (size: number) => {
-  return size * PXbyDXA;
+  return size * PXbyTWIPS;
 };
 
 // table node to docx ITableOptions
@@ -165,11 +161,12 @@ export const tableNodeToITableOptions = (
           index,
           cellParam.columnSpan || 1
         );
-
         tdStyleOption.tWidth = width;
       }
 
-      const cellWidth = getCellWidthInDXA(tdStyleOption.tWidth || 185);
+      const cellWidth = hasColGroup
+        ? tdStyleOption.tWidth || D_TableFullWidth / cols.length
+        : getCellWidthInDXA(tdStyleOption.tWidth || 185);
 
       cellParam.width = {
         size: cellWidth,

@@ -14,9 +14,6 @@ export const Splitter_Semicolon = ';';
 // px by twips
 export const PXbyTWIPS = 15;
 
-// px by DXA
-export const PXbyDXA = 16;
-
 // px by pt
 export const PXbyPT = 3 / 4;
 
