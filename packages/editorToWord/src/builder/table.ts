@@ -121,22 +121,26 @@ export const tableNodeToITableOptions = (
     const cellChildren = tds.map((td, index) => {
       const { attrs, shape } = td;
 
-      const tdStyleOption = calcTextRunStyle(shape, tagStyleMap);
+      // table paragraph use line-height 1.0 for default
+      const styles = { ...tagStyleMap };
+      delete styles.p;
+
+      const tdStyleOption = calcTextRunStyle(shape, styles);
 
       // TODO: support Nested Tables and other elements
       // use `contentBuilder` maybe better
       const texts = td.children.map((t) => {
         const { shape, content, children } = t;
         if (children?.length) {
-          const c = getChildrenByTextRun(children || [], tagStyleMap);
+          const c = getChildrenByTextRun(children || [], styles);
           return new Paragraph({
             children: c,
-            ...calcTextRunStyle(shape, tagStyleMap),
+            ...calcTextRunStyle(shape, styles),
           });
         }
         return new Paragraph({
           text: content,
-          ...calcTextRunStyle(shape, tagStyleMap),
+          ...calcTextRunStyle(shape, styles),
         });
       });
 
@@ -193,7 +197,7 @@ export const tableNodeToITableOptions = (
 
       const tableCellOptions = {
         ...cellParam,
-        ...calcTextRunStyle(shape, tagStyleMap),
+        ...calcTextRunStyle(shape, styles),
         margins,
       };
 
