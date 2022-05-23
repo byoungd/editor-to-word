@@ -12,13 +12,13 @@ export const Splitter_Colon = ':';
 export const Splitter_Semicolon = ';';
 
 // px by twips
-export const PXbyTWIPS = 15;
+export const PXbyTWIPS = 16;
 
 // px by pt
 export const PXbyPT = 3 / 4;
 
 // default font size in px
-export const D_FontSizePX = 16;
+export const D_FontSizePX = 16.3;
 
 // default font size in pt
 export const D_FontSizePT = D_FontSizePX * PXbyPT;
@@ -41,11 +41,13 @@ export const D_PageTableFullWidth = 642;
 // default table full width in DXA
 export const D_TableFullWidth = 9035;
 
+export const D_TableBorderColor = '444444';
+
 // a4 paper size
 export const A4MillimetersWidth = 145.4;
 
 // table cell margin in twips
-export const D_CELL_MARGIN = 4 * PXbyTWIPS;
+export const D_CELL_MARGIN = 1 * PXbyTWIPS;
 
 // table border width in px
 export const D_TableBorderSize = 2;

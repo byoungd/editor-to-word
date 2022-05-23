@@ -13,11 +13,12 @@ import {
 import { CellParam, CustomTagStyleMap, Node, TableParam } from '../types';
 import {
   D_CELL_MARGIN,
+  D_TableBorderColor,
   D_TableBorderSize,
   D_TableFullWidth,
   DefaultBorder,
 } from '../default';
-import { D_TableCellHeightPx, D_TagStyleMap, PXbyTWIPS } from './../default';
+import { D_TableCellHeightPx, D_TagStyleMap } from './../default';
 import { calcTextRunStyle, getChildrenByTextRun } from './text';
 
 import { handleSizeNumber } from '../utils';
@@ -30,15 +31,17 @@ export const getTableBorderStyleSingle = (size: number, color: string) => {
   return { style: BorderStyle.SINGLE, size: size * 10, color: color };
 };
 
+const tablePxByXDA = D_TableFullWidth / 553;
+
 export const getColGroupWidth = (cols: Node[]) => {
   const count = cols.length;
-  const defaultWidth = count ? D_TableFullWidth / PXbyTWIPS / count : 0;
+  const defaultWidth = count ? D_TableFullWidth / tablePxByXDA / count : 0;
   return cols
     .filter((c) => c.name === 'col')
     .map((col) => {
       const { attrs } = col;
       return (
-        PXbyTWIPS *
+        tablePxByXDA *
         (handleSizeNumber(String(attrs.width))?.value || defaultWidth)
       );
     });
@@ -55,7 +58,7 @@ export const handleCellWidthFromColgroup = (
 };
 
 export const getCellWidthInDXA = (size: number) => {
-  return size * PXbyTWIPS;
+  return size * tablePxByXDA;
 };
 
 // table node to docx ITableOptions
@@ -92,7 +95,7 @@ export const tableNodeToITableOptions = (
 
   const { border } = attrs;
   const borderSize = border ? parseFloat(border as string) : D_TableBorderSize;
-  const borderColor = styleOp.borderColor || '333333';
+  const borderColor = styleOp.borderColor || D_TableBorderColor;
 
   const borders = {
     top: getTableBorderStyleSingle(borderSize, borderColor),
@@ -209,7 +212,7 @@ export const tableNodeToITableOptions = (
       height: { value: 0, rule: HeightRule.EXACT },
     };
 
-    const h = (trHeight ?? D_TableCellHeightPx) * PXbyTWIPS + D_CELL_MARGIN * 2;
+    const h = (trHeight ?? D_TableCellHeightPx) * tablePxByXDA;
 
     para.height = { value: h, rule: HeightRule.EXACT };
 
