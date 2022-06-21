@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3005",
+    "dev": "next dev --port 3010",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3010",
     "test": "jest --coverage",
     "lint": "eslint src --fix"
   },
