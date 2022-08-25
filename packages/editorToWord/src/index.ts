@@ -57,21 +57,29 @@ export const StyleBuilder = (
 };
 
 // element creator
-export const ElementCreator = (
+export const ElementCreator = async (
   astList: Node[],
   tagStyleMap: CustomTagStyleMap = D_TagStyleMap
-): Paragraph[] => {
+): Promise<Paragraph[]> => {
   if (!astList || astList.length === 0) return [];
   const tags = StyleBuilder(
     astList.filter((n: Node) => n.type === 'tag'),
     tagStyleMap
   );
   if (!tags) return [];
-  const ps = tags
-    .map((node: Node) => {
-      return contentBuilder(node, tagStyleMap);
-    })
-    .filter(Boolean);
+
+  const ps: Paragraph[] = [];
+  for (let node of tags) {
+    const p = await contentBuilder(node, tagStyleMap);
+    if (p) {
+      ps.push(p as Paragraph);
+    }
+  }
+  // const ps = tags
+  //   .map((node: Node) => {
+  //     return contentBuilder(node, tagStyleMap);
+  //   })
+  //   .filter(Boolean);
   return [...ps] as Paragraph[];
 };
 
@@ -81,13 +89,18 @@ export const htmlToAST = (html: string): Node[] => {
 };
 
 // generate Document
-export const genDocument = (html: HTMLString, options?: IExportOption) => {
-  const layout = options?.layout || D_Layout;
+export const genDocument = async (
+  html: HTMLString,
+  options?: IExportOption
+) => {
+  const layoutOp = options?.layout || {};
+  const layout = { ...D_Layout, ...layoutOp };
+
   const styleMap = options?.tagStyleMap || D_TagStyleMap;
 
   const ast: Node[] = htmlToAST(html);
 
-  const paragraphs = ElementCreator(ast, styleMap);
+  const paragraphs = await ElementCreator(ast, styleMap);
   const {
     orientation,
     topMargin,
@@ -126,7 +139,7 @@ export const genDocument = (html: HTMLString, options?: IExportOption) => {
 
     section.headers = {
       default: new Header({
-        children: ElementCreator(ast, styleMap),
+        children: await ElementCreator(ast, styleMap),
       }),
     };
   }
@@ -135,7 +148,7 @@ export const genDocument = (html: HTMLString, options?: IExportOption) => {
     const ast = parse(footer) as Node[];
     section.footers = {
       default: new Footer({
-        children: ElementCreator(ast, styleMap),
+        children: await ElementCreator(ast, styleMap),
       }),
     };
   }
@@ -162,7 +175,7 @@ export const exportHtmlToDocx = async (
   docName = 'doc',
   options?: IExportOption
 ) => {
-  const doc = genDocument(trimHtml(html), options);
+  const doc = await genDocument(trimHtml(html), options);
   exportAsDocx(doc, docName);
   return doc;
 };
@@ -178,13 +191,13 @@ export const exportMultiDocsAsZip = async (
   if (len === 1) {
     const d = docList[0];
     const { html, name } = d;
-    const file = genDocument(trimHtml(html), options);
+    const file = await genDocument(trimHtml(html), options);
     exportAsDocx(file, name);
     return;
   }
   for (let docFile of docList) {
     const { html, name } = docFile;
-    const doc = genDocument(trimHtml(html), options);
+    const doc = await genDocument(trimHtml(html), options);
     const file = await Packer.toBlob(doc);
     zip.file(`${name}.docx`, file);
   }

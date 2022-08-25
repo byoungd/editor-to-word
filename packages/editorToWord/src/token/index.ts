@@ -33,7 +33,7 @@ import {
   isBackgroundColor,
   isSubScript,
   isSuperScript,
-} from './judge';
+} from '../judge';
 
 export const tokens = [
   {

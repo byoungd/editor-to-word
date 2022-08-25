@@ -5,7 +5,7 @@ import { isFilledArray } from '../utils';
 import { tableCreator } from './table';
 import { calcTextRunStyle, getChildrenByTextRun } from './text';
 
-export const contentBuilder = (
+export const contentBuilder = async (
   node: Node,
   tagStyleMap: CustomTagStyleMap = D_TagStyleMap
 ) => {
@@ -34,14 +34,15 @@ export const contentBuilder = (
     };
     return new Paragraph(paragraphOption);
   } else if (isNormalParagraphWithChildren) {
-    para.children = getChildrenByTextRun(children, tagStyleMap);
+    para.children = await getChildrenByTextRun(children, tagStyleMap);
     const paragraphOption = {
       ...para,
       ...calcTextRunStyle(shape, tagStyleMap),
     };
     return new Paragraph(paragraphOption);
   } else if (isTable) {
-    return tableCreator(node, tagStyleMap);
+    const table = await tableCreator(node, tagStyleMap);
+    return table;
   } else {
     return null;
   }

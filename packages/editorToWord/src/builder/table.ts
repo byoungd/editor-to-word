@@ -62,10 +62,10 @@ export const getCellWidthInDXA = (size: number) => {
 };
 
 // table node to docx ITableOptions
-export const tableNodeToITableOptions = (
+export const tableNodeToITableOptions = async (
   tableNode: Node,
   tagStyleMap: CustomTagStyleMap = D_TagStyleMap
-): ITableOptions | null => {
+): Promise<ITableOptions | null> => {
   const { children: tc, attrs, shape } = tableNode;
 
   const isTBody = (n: Node) => n.name === 'tbody';
@@ -112,7 +112,10 @@ export const tableNodeToITableOptions = (
   const firstRowColumnSize: number[] = [];
   let hasColGroup = false;
   const trs = tbody.children.filter(isTr);
-  const rows = trs.map((tr, idx) => {
+
+  const rows = [];
+
+  for (let { tr, idx } of trs.map((tr, idx) => ({ tr, idx }))) {
     const { children, attrs } = tr;
 
     let trHeight = attrs?.style
@@ -121,7 +124,11 @@ export const tableNodeToITableOptions = (
       : D_TableCellHeightPx;
 
     const tds = children.filter(isTd);
-    const cellChildren = tds.map((td, index) => {
+
+    const cellChildren = [];
+
+    for (let tdObj of tds.map((item, index) => ({ item, index }))) {
+      const { item: td, index } = tdObj;
       const { attrs, shape } = td;
 
       // table paragraph use line-height 1.0 for default
@@ -132,20 +139,26 @@ export const tableNodeToITableOptions = (
 
       // TODO: support Nested Tables and other elements
       // use `contentBuilder` maybe better
-      const texts = td.children.map((t) => {
+
+      const texts = [];
+      for (let t of td.children) {
         const { shape, content, children } = t;
         if (children?.length) {
-          const c = getChildrenByTextRun(children || [], styles);
-          return new Paragraph({
-            children: c,
-            ...calcTextRunStyle(shape, styles),
-          });
+          const c = await getChildrenByTextRun(children || [], styles);
+          texts.push(
+            new Paragraph({
+              children: c,
+              ...calcTextRunStyle(shape, styles),
+            })
+          );
         }
-        return new Paragraph({
-          text: content,
-          ...calcTextRunStyle(shape, styles),
-        });
-      });
+        texts.push(
+          new Paragraph({
+            text: content,
+            ...calcTextRunStyle(shape, styles),
+          })
+        );
+      }
 
       const cellParam: CellParam = {
         children: texts,
@@ -204,8 +217,8 @@ export const tableNodeToITableOptions = (
         margins,
       };
 
-      return new TableCell(tableCellOptions as ITableCellOptions);
-    });
+      cellChildren.push(new TableCell(tableCellOptions as ITableCellOptions));
+    }
 
     const para = {
       children: cellChildren,
@@ -216,8 +229,8 @@ export const tableNodeToITableOptions = (
 
     para.height = { value: h, rule: HeightRule.EXACT };
 
-    return new TableRow(para);
-  });
+    rows.push(new TableRow(para));
+  }
 
   const tableWidths = hasColGroup ? cols : firstRowColumnSize;
   tableParam.columnWidths = tableWidths;
@@ -231,11 +244,11 @@ export const tableNodeToITableOptions = (
 };
 
 // create docx table from table node
-export const tableCreator = (
+export const tableCreator = async (
   tableNode: Node,
   tagStyleMap: CustomTagStyleMap = D_TagStyleMap
 ) => {
-  const tableParam = tableNodeToITableOptions(tableNode, tagStyleMap);
+  const tableParam = await tableNodeToITableOptions(tableNode, tagStyleMap);
   if (!tableParam) return null;
   return new Table(tableParam);
 };

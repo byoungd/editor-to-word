@@ -125,6 +125,7 @@ export const TagType = {
   table: 'table',
   link: 'a',
   text: 'text',
+  img: 'img',
 };
 
 // default border style

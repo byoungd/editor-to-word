@@ -7,8 +7,15 @@ import {
   Splitter_Colon,
   Splitter_Semicolon,
 } from '../default';
-import { ExternalHyperlink, IRunOptions, ParagraphChild, TextRun } from 'docx';
 import {
+  ExternalHyperlink,
+  ImageRun,
+  IRunOptions,
+  ParagraphChild,
+  TextRun,
+} from 'docx';
+import {
+  getImageBlob,
   getUniqueArrayByKey,
   isFilledArray,
   isValidColor,
@@ -103,31 +110,49 @@ export const textCreator = (
 };
 
 // map children as ParagraphChild
-export const getChildrenByTextRun = (
+export const getChildrenByTextRun = async (
   nodeList: Node[],
   tagStyleMap: CustomTagStyleMap = D_TagStyleMap
-): ParagraphChild[] => {
+): Promise<ParagraphChild[]> => {
   const texts: ParagraphChild[] = [];
-  const concatText = (list: Node[], arr: ParagraphChild[]) => {
-    list.forEach((node) => {
+  const concatText = async (list: Node[], arr: ParagraphChild[]) => {
+    for (let node of list) {
       if (isFillTextNode(node)) {
         arr.push(textCreator(node, tagStyleMap));
+      } else if (node.name === TagType.img) {
+        const { attrs } = node;
+        const { src, width = 100, height = 100 } = attrs;
+        if (src) {
+          try {
+            const imgBlob = await getImageBlob(String(src));
+            const image = new ImageRun({
+              data: imgBlob as unknown as ArrayBuffer,
+              transformation: {
+                width: Number(width),
+                height: Number(height),
+              },
+            });
+            arr.push(image);
+          } catch (e) {
+            console.log('download image error', e);
+          }
+        }
       } else if (isFilledArray(node.children)) {
         // deal with hyperlink
         if (node.name === TagType.link) {
           const { attrs } = node;
           const text = new ExternalHyperlink({
-            children: getChildrenByTextRun(node.children, tagStyleMap),
+            children: await getChildrenByTextRun(node.children, tagStyleMap),
             link: attrs.href ? String(attrs.href) : '',
           });
           arr.push(text);
         } else {
-          concatText(node.children, arr);
+          await concatText(node.children, arr);
         }
       }
-    });
+    }
   };
-  concatText(nodeList, texts);
+  await concatText(nodeList, texts);
 
   return texts;
 };

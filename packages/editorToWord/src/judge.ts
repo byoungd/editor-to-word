@@ -1,6 +1,6 @@
-import { StyleMap } from './styleMap';
+import { StyleMap } from './token/styleMap';
 
-import { StyleInterface } from '../types';
+import { StyleInterface } from './types';
 
 export const isColor = ({ key }: StyleInterface) => key === StyleMap.color;
 

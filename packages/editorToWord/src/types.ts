@@ -177,7 +177,7 @@ export type CustomTagStyleMap = Partial<{
 
 export interface IExportOption {
   tagStyleMap?: CustomTagStyleMap;
-  layout?: IPageLayout;
+  layout?: Partial<IPageLayout>;
 }
 
 export interface IExportDoc {

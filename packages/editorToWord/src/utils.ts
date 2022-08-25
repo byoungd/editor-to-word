@@ -96,3 +96,8 @@ export const optimizeBlankSpace = (content: string, ratio = 1) => {
     blank.length > 1 ? `${textWithoutBlank}${optimizedBlank}` + '\t' : content;
   return text;
 };
+
+export const getImageBlob = async (src: string) => {
+  const blob = await fetch(src).then((res) => res.blob());
+  return blob;
+};
