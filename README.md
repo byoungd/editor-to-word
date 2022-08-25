@@ -32,10 +32,6 @@ yarn
 # 2 build pkg
 yarn build
 
-# 3 start next-app and visit `http://localhost:3000/`
+# 3 start next-app and visit `http://localhost:3010/`
 yarn dev
 ```
-
-## TODO
-
-- list
