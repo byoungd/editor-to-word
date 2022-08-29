@@ -120,16 +120,17 @@ export const getChildrenByTextRun = async (
       if (isFillTextNode(node)) {
         arr.push(textCreator(node, tagStyleMap));
       } else if (node.name === TagType.img) {
-        const { attrs } = node;
+        const { attrs, shape } = node;
         const { src, width = 100, height = 100 } = attrs;
+        const styleOp = calcTextRunStyle(shape);
         if (src) {
           try {
             const imgBlob = await getImageBlob(String(src));
             const image = new ImageRun({
               data: imgBlob as unknown as ArrayBuffer,
               transformation: {
-                width: Number(width),
-                height: Number(height),
+                width: styleOp.tWidth || Number(width),
+                height: styleOp.tHeight || Number(height),
               },
             });
             arr.push(image);

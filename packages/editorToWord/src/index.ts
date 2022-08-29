@@ -184,20 +184,20 @@ export const exportHtmlToDocx = async (
 export const exportMultiDocsAsZip = async (
   docList: IExportDoc[],
   fileName = 'docs',
-  options?: IExportOption
+  export_option?: IExportOption
 ) => {
   const zip = new JSZip();
   const len = docList.length;
   if (len === 1) {
     const d = docList[0];
-    const { html, name } = d;
-    const file = await genDocument(trimHtml(html), options);
+    const { html, name, option } = d;
+    const file = await genDocument(trimHtml(html), option || export_option);
     exportAsDocx(file, name);
     return;
   }
   for (let docFile of docList) {
-    const { html, name } = docFile;
-    const doc = await genDocument(trimHtml(html), options);
+    const { html, name, option } = docFile;
+    const doc = await genDocument(trimHtml(html), option || export_option);
     const file = await Packer.toBlob(doc);
     zip.file(`${name}.docx`, file);
   }

@@ -183,4 +183,5 @@ export interface IExportOption {
 export interface IExportDoc {
   name: string;
   html: string;
+  option?: IExportOption;
 }
